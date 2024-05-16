@@ -27,18 +27,27 @@
             font-size: 1rem;
             color: #666;
         }
-        .contact-info {
+        .contact-info, .portfolio, .game {
             margin-top: 2rem;
         }
-        .contact-info h2 {
+        .contact-info h2, .portfolio h2, .game h2 {
             color: #333;
         }
-        .contact-info p {
+        .contact-info p, .portfolio p, .game p {
             color: #666;
         }
+        .portfolio-item, .game {
+            margin-bottom: 1.5rem;
+        }
+        canvas {
+            background-color: #000;
+            display: block;
+            margin: 0 auto;
+        }
     </style>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.9.5/brython.min.js"></script>
 </head>
-<body>
+<body onload="brython()">
     <header>
         <h1>Xinhao Chen</h1>
         <p>My Profile</p>
@@ -52,6 +61,23 @@
             <h2>Contact Information</h2>
             <p>Email: <a href="mailto:873809518@qq.com">873809518@qq.com</a></p>
             <p>Phone: 587-566-6312</p>
+        </section>
+        <section class="portfolio">
+            <h2>Portfolio</h2>
+            <div class="portfolio-item">
+                <h3>Project 1</h3>
+                <p>Description of Project 1.</p>
+            </div>
+            <div class="portfolio-item">
+                <h3>Project 2</h3>
+                <p>Description of Project 2.</p>
+            </div>
+        </section>
+        <section class="game">
+            <h2>Snake Game</h2>
+            <p>A simple Snake game implemented using Brython (Python in the browser).</p>
+            <canvas id="snake-canvas" width="800" height="400"></canvas>
+            <script type="text/python" src="snake.py"></script>
         </section>
     </div>
 </body>
