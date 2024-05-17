@@ -6,10 +6,11 @@
     <title>Xinhao Chen - My Profile</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f4f4f4;
+            color: #333;
         }
         header {
             background-color: #4CAF50;
@@ -20,64 +21,87 @@
         .container {
             padding: 2rem;
         }
-        h1 {
+        h1, h2, h3 {
             color: #333;
         }
         p {
             font-size: 1rem;
             color: #666;
+            line-height: 1.6;
         }
-        .contact-info, .portfolio, .game {
+        .profile, .contact-info {
             margin-top: 2rem;
         }
-        .contact-info h2, .portfolio h2, .game h2 {
+        .contact-info h2 {
             color: #333;
         }
-        .contact-info p, .portfolio p, .game p {
+        .contact-info p {
             color: #666;
         }
-        .portfolio-item, .game {
-            margin-bottom: 1.5rem;
+        .profile-picture {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin: 0 auto 1rem;
         }
-        canvas {
-            background-color: #000;
-            display: block;
-            margin: 0 auto;
+        .profile-picture img {
+            width: 100%;
+            height: auto;
+        }
+        .intro {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .skills {
+            margin-top: 2rem;
+        }
+        .skills h3 {
+            color: #4CAF50;
+        }
+        .skills ul {
+            list-style: none;
+            padding: 0;
+        }
+        .skills li {
+            background: #e4e4e4;
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            border-radius: 5px;
         }
     </style>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.9.5/brython.min.js"></script>
 </head>
-<body onload="brython()">
+<body>
     <header>
         <h1>Xinhao Chen</h1>
         <p>My Profile</p>
     </header>
     <div class="container">
-        <section class="about-me">
-            <h1>About Me</h1>
-            <p>This section will be updated later.</p>
+        <section class="profile">
+            <div class="profile-picture">
+                <img src="https://via.placeholder.com/150" alt="Profile Picture">
+            </div>
+            <div class="intro">
+                <h2>About Me</h2>
+                <p>Hello! I’m Xinhao Chen, a recent graduate from the University of Alberta with a passion for algorithms, programming languages, and AI algorithms. During my studies, I acquired a strong foundation in various programming languages and developed a keen interest in artificial intelligence and its applications.</p>
+                <p>My academic journey has equipped me with the skills to tackle complex problems and develop efficient solutions. I am always eager to learn new technologies and improve my knowledge in the field of computer science.</p>
+            </div>
+            <div class="skills">
+                <h3>Skills & Expertise</h3>
+                <ul>
+                    <li>Algorithms</li>
+                    <li>Artificial Intelligence</li>
+                    <li>Python, Java, C++</li>
+                    <li>Machine Learning</li>
+                    <li>Data Structures</li>
+                    <li>Software Development</li>
+                </ul>
+            </div>
         </section>
         <section class="contact-info">
             <h2>Contact Information</h2>
             <p>Email: <a href="mailto:873809518@qq.com">873809518@qq.com</a></p>
             <p>Phone: 587-566-6312</p>
-        </section>
-        <section class="portfolio">
-            <h2>Portfolio</h2>
-            <div class="portfolio-item">
-                <h3>Project 1</h3>
-                <p>Description of Project 1.</p>
-            </div>
-            <div class="portfolio-item">
-                <h3>Project 2</h3>
-                <p>Description of Project 2.</p>
-            </div>
-        </section>
-        <section class="game">
-            <h2>Snake Game</h2>
-            <p>A simple Snake game implemented using Brython (Python in the browser).</p>
-            <canvas id="snake-canvas" width="800" height="600"></canvas>
-            <script type="text/python" src="snake.py"></script>
         </section>
     </div>
 </body>
