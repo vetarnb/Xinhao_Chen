@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Structures - Xinhao Chen</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        .container {
+            padding: 2rem;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        p {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        pre {
+            background: #e4e4e4;
+            padding: 1rem;
+            border-radius: 5px;
+        }
+        a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Data Structures</h1>
+        <p>By Xinhao Chen</p>
+    </header>
+    <div class="container">
+        <h2>About Data Structures</h2>
+        <p>Data Structures are fundamental concepts in computer science that involve organizing and storing data efficiently. They enable algorithms to process data quickly and effectively.</p>
+        <h3>Sample Code: Linked List</h3>
+        <pre>
+class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+class LinkedList:
+    def __init__(self):
+        self.head = None
+
+    def append(self, data):
+        new_node = Node(data)
+        if self.head is None:
+            self.head = new_node
+            return
+        last = self.head
+        while last.next:
+            last = last.next
+        last.next = new_node
+
+    def print_list(self):
+        curr_node = self.head
+        while curr_node:
+            print(curr_node.data)
+            curr_node = curr_node.next
+
+# Sample usage
+llist = LinkedList()
+llist.append(1)
+llist.append(2)
+llist.append(3)
+llist.print_list()
+        </pre>
+        <p><a href="index.html">Back to Profile</a></p>
+    </div>
+</body>
+</html>
