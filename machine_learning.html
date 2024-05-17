@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machine Learning - Xinhao Chen</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        .container {
+            padding: 2rem;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        p {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        pre {
+            background: #e4e4e4;
+            padding: 1rem;
+            border-radius: 5px;
+        }
+        a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Machine Learning</h1>
+        <p>By Xinhao Chen</p>
+    </header>
+    <div class="container">
+        <h2>About Machine Learning</h2>
+        <p>Machine Learning (ML) is a subset of artificial intelligence that provides systems the ability to automatically learn and improve from experience without being explicitly programmed. ML focuses on the development of algorithms that can analyze and learn from data.</p>
+        <h3>Sample Code: Linear Regression</h3>
+        <pre>
+import numpy as np
+from sklearn.linear_model import LinearRegression
+
+# Sample data
+X = np.array([[1, 1], [1, 2], [2, 2], [2, 3]])
+y = np.dot(X, np.array([1, 2])) + 3
+
+# Create a model and fit it
+model = LinearRegression().fit(X, y)
+
+# Make a prediction
+predicted = model.predict(np.array([[3, 5]]))
+
+print("Predicted value:", predicted)
+        </pre>
+        <p><a href="index.html">Back to Profile</a></p>
+    </div>
+</body>
+</html>
