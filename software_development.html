@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software Development - Xinhao Chen</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        .container {
+            padding: 2rem;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        p {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        pre {
+            background: #e4e4e4;
+            padding: 1rem;
+            border-radius: 5px;
+        }
+        a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Software Development</h1>
+        <p>By Xinhao Chen</p>
+    </header>
+    <div class="container">
+        <h2>About Software Development</h2>
+        <p>Software Development is the process of designing, creating, testing, and maintaining software applications. It involves a combination of programming, engineering, and project management skills to build software solutions that meet user needs.</p>
+        <h3>Sample Code: Simple To-Do List Application in JavaScript</h3>
+        <pre>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 2rem;
+        }
+        .todo-container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .todo-container h1 {
+            color: #4CAF50;
+        }
+        .todo-container input {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .todo-container ul {
+            list-style: none;
+            padding: 0;
+        }
+        .todo-container ul li {
+            padding: 10px;
+            background: #e4e4e4;
+            margin-bottom: 1rem;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .todo-container ul li button {
+            background: #4CAF50;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .todo-container ul li button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="todo-container">
+        <h1>To-Do List</h1>
+        <input type="text" id="todo-input" placeholder="Add a new task">
+        <ul id="todo-list"></ul>
+    </div>
+    <script>
+        document.getElementById('todo-input').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                var task = this.value;
+                if (task) {
+                    addTask(task);
+                    this.value = '';
+                }
+            }
+        });
+
+        function addTask(task) {
+            var li = document.createElement('li');
+            li.textContent = task;
+
+            var btn = document.createElement('button');
+            btn.textContent = 'Remove';
+            btn.addEventListener('click', function() {
+                li.remove();
+            });
+
+            li.appendChild(btn);
+            document.getElementById('todo-list').appendChild(li);
+        }
+    </script>
+</body>
+</html>
+        </pre>
+        <p><a href="index.html">Back to Profile</a></p>
+    </div>
+</body>
+</html>
