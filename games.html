@@ -58,6 +58,13 @@
     button:hover {
       background-color: #45a049;
     }
+    #controls {
+      margin-top: 2rem;
+      text-align: center;
+    }
+    #controls button {
+      margin: 0.5rem;
+    }
   </style>
 </head>
 <body>
@@ -95,7 +102,13 @@
         </div>
       </div>
 
-      <p id="instructions">Use arrow keys to move the key to the house!</p>
+      <p id="instructions">Use arrow keys or buttons to move the key to the house!</p>
+      <div id="controls">
+        <button onclick="moveUp()">↑</button><br>
+        <button onclick="moveLeft()">←</button>
+        <button onclick="moveDown()">↓</button>
+        <button onclick="moveRight()">→</button>
+      </div>
       <br><br>
       <a href="index.html"><button>Back to Profile</button></a>
     </div>
