@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artificial Intelligence - Xinhao Chen</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        .container {
+            padding: 2rem;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        p {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Artificial Intelligence</h1>
+        <p>By Xinhao Chen</p>
+    </header>
+    <div class="container">
+        <h2>About Artificial Intelligence</h2>
+        <p>Artificial Intelligence (AI) is a broad field that involves the creation of systems capable of performing tasks that require human intelligence. These tasks include learning, reasoning, problem-solving, perception, and language understanding.</p>
+        <h3>Sample Code: Simple Neural Network in Python</h3>
+        <pre>
+import numpy as np
+
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+def sigmoid_derivative(x):
+    return x * (1 - x)
+
+# Input dataset
+inputs = np.array([[0, 0],
+                   [0, 1],
+                   [1, 0],
+                   [1, 1]])
+
+# Output dataset
+outputs = np.array([[0], [1], [1], [0]])
+
+# Seed the random number generator
+np.random.seed(1)
+
+# Initialize weights randomly with mean 0
+weights = 2 * np.random.random((2, 1)) - 1
+
+# Training loop
+for epoch in range(10000):
+    # Forward propagation
+    input_layer = inputs
+    outputs_pred = sigmoid(np.dot(input_layer, weights))
+    
+    # Calculate error
+    error = outputs - outputs_pred
+    
+    # Backpropagation
+    adjustments = error * sigmoid_derivative(outputs_pred)
+    weights += np.dot(input_layer.T, adjustments)
+
+print("Weights after training:")
+print(weights)
+
+print("Output after training:")
+print(outputs_pred)
+        </pre>
+        <p><a href="index.html">Back to Profile</a></p>
+    </div>
+</body>
+</html>
