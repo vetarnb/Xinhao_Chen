@@ -195,11 +195,14 @@ function animate() {
     player.switchSprite('idle')
   }
 
-  // jumping
-  if (player.velocity.y < 0) {
+  // jumping with boundary checks
+  if (player.velocity.y < 0 && player.position.y > 0) {
     player.switchSprite('jump')
   } else if (player.velocity.y > 0) {
     player.switchSprite('fall')
+  } else if (player.position.y + player.height >= canvas.height) {
+    player.velocity.y = 0
+    player.position.y = canvas.height - player.height
   }
 
   // enemy movement with boundary checks
@@ -213,11 +216,14 @@ function animate() {
     enemy.switchSprite('idle')
   }
 
-  // jumping
-  if (enemy.velocity.y < 0) {
+  // jumping with boundary checks
+  if (enemy.velocity.y < 0 && enemy.position.y > 0) {
     enemy.switchSprite('jump')
   } else if (enemy.velocity.y > 0) {
     enemy.switchSprite('fall')
+  } else if (enemy.position.y + enemy.height >= canvas.height) {
+    enemy.velocity.y = 0
+    enemy.position.y = canvas.height - enemy.height
   }
 
   // detect for collision & enemy gets hit
@@ -284,7 +290,9 @@ window.addEventListener('keydown', (event) => {
         player.lastKey = 'a'
         break
       case 'w':
-        player.velocity.y = -20
+        if (player.position.y > 0) {
+          player.velocity.y = -20
+        }
         break
       case 's':
         player.attack()
@@ -303,11 +311,12 @@ window.addEventListener('keydown', (event) => {
         enemy.lastKey = 'ArrowLeft'
         break
       case 'ArrowUp':
-        enemy.velocity.y = -20
+        if (enemy.position.y > 0) {
+          enemy.velocity.y = -20
+        }
         break
       case 'ArrowDown':
         enemy.attack()
-
         break
     }
   }
