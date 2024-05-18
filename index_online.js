@@ -20,9 +20,7 @@ const shop = new Sprite({
   framesMax: 6
 });
 
-let player;
-let enemy;
-
+let player, enemy, role;
 const socket = new WebSocket('ws://localhost:8080');
 const roomNumber = localStorage.getItem('roomNumber');
 
@@ -147,6 +145,24 @@ function startGame(role) {
   animate();
 }
 
+function updateGame(data) {
+  if (data.role === 'player') {
+    player.position = data.position;
+    player.velocity = data.velocity;
+    player.health = data.health;
+    player.attackBox.position = data.attackBox.position;
+    player.framesCurrent = data.framesCurrent;
+    player.isAttacking = data.isAttacking;
+  } else {
+    enemy.position = data.position;
+    enemy.velocity = data.velocity;
+    enemy.health = data.health;
+    enemy.attackBox.position = data.attackBox.position;
+    enemy.framesCurrent = data.framesCurrent;
+    enemy.isAttacking = data.isAttacking;
+  }
+}
+
 function animate() {
   window.requestAnimationFrame(animate);
   c.fillStyle = 'black';
@@ -221,6 +237,9 @@ function animate() {
     player.isAttacking = false;
 
     gsap.to('#enemyHealth', { width: enemy.health + '%' });
+
+    // Send state update to server
+    socket.send(JSON.stringify({ role: 'player', position: player.position, velocity: player.velocity, health: player.health, attackBox: player.attackBox, framesCurrent: player.framesCurrent, isAttacking: player.isAttacking }));
   }
 
   // If player misses
@@ -238,6 +257,9 @@ function animate() {
     enemy.isAttacking = false;
 
     gsap.to('#playerHealth', { width: player.health + '%' });
+
+    // Send state update to server
+    socket.send(JSON.stringify({ role: 'enemy', position: enemy.position, velocity: enemy.velocity, health: enemy.health, attackBox: enemy.attackBox, framesCurrent: enemy.framesCurrent, isAttacking: enemy.isAttacking }));
   }
 
   // If enemy misses
@@ -292,6 +314,9 @@ window.addEventListener('keydown', (event) => {
         }
         break;
     }
+
+    // Send state update to server
+    socket.send(JSON.stringify({ role: 'player', position: player.position, velocity: player.velocity, health: player.health, attackBox: player.attackBox, framesCurrent: player.framesCurrent, isAttacking: player.isAttacking }));
   }
 
   if (!enemy.dead) {
@@ -317,6 +342,9 @@ window.addEventListener('keydown', (event) => {
         enemy.attack();
         break;
     }
+
+    // Send state update to server
+    socket.send(JSON.stringify({ role: 'enemy', position: enemy.position, velocity: enemy.velocity, health: enemy.health, attackBox: enemy.attackBox, framesCurrent: enemy.framesCurrent, isAttacking: enemy.isAttacking }));
   }
 });
 
