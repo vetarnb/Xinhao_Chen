@@ -32,21 +32,21 @@ wss.on('connection', (ws) => {
       const index = room.players.indexOf(ws);
       if (index !== -1) {
         room.players.splice(index, 1);
-        if (room.players.length === 0) {
-          delete rooms[roomNumber];
-        }
       }
     });
+  });
 
-    ws.on('message', (message) => {
-      const state = JSON.parse(message);
-      room.state = state;
+  ws.on('message', (message) => {
+    const state = JSON.parse(message);
+    const roomNumber = state.room;
+    const room = rooms[roomNumber];
 
-      room.players.forEach((player) => {
-        if (player !== ws) {
-          player.send(message);
-        }
-      });
+    room.state = state;
+
+    room.players.forEach((player) => {
+      if (player !== ws) {
+        player.send(message);
+      }
     });
   });
 });
