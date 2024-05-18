@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enter Room Number</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f4f4f4;
+    }
+    .container {
+      text-align: center;
+    }
+    input {
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Enter Room Number</h1>
+    <input type="text" id="roomNumber" placeholder="Room Number">
+    <button onclick="joinRoom()">Join Room</button>
+  </div>
+
+  <script>
+    function joinRoom() {
+      const roomNumber = document.getElementById('roomNumber').value;
+      if (roomNumber) {
+        localStorage.setItem('roomNumber', roomNumber);
+        window.location.href = 'match.html';
+      }
+    }
+  </script>
+</body>
+</html>
