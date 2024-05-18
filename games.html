@@ -1,124 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Maze Game - Xinhao Chen</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f4f4f4;
-      color: #333;
-    }
-    header {
-      background-color: #4CAF50;
-      color: white;
-      padding: 1rem;
-      text-align: center;
-    }
-    .container {
-      padding: 2rem;
-    }
-    h1 {
-      color: #4CAF50;
-    }
-    p {
-      font-size: 1rem;
-      line-height: 1.6;
-    }
-    pre {
-      background: #e4e4e4;
-      padding: 1rem;
-      border-radius: 5px;
-    }
-    a {
-      color: #4CAF50;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-    #page {
-      padding: 2rem;
-    }
-    #mazeContainer {
-      margin: 0 auto;
-    }
-    button {
-      margin-top: 1rem;
-      padding: 0.5rem 1rem;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-    .control-buttons {
-      display: flex;
-      justify-content: center;
-      margin-top: 1rem;
-    }
-    .control-buttons img {
-      margin: 0 5px;
-      cursor: pointer;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maze Game - Xinhao Chen</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        .container {
+            padding: 2rem;
+            text-align: center;
+        }
+        h1 {
+            color: #4CAF50;
+        }
+        p {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        pre {
+            background: #e4e4e4;
+            padding: 1rem;
+            border-radius: 5px;
+        }
+        a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        #page {
+            padding: 2rem;
+        }
+        #mazeContainer {
+            margin: 0 auto;
+        }
+        button {
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .control-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        .control-buttons button {
+            margin: 0.2rem;
+            padding: 1rem;
+            font-size: 1rem;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>Maze Game</h1>
-    <p>By Xinhao Chen</p>
-  </header>
-  <div class="container">
-    <div id="page">
-      <div id="Message-Container">
-        <div id="message">
-          <h1>Congratulations!</h1>
-          <p>You are done.</p>
-          <p id="moves"></p>
-          <input id="okBtn" type="button" onclick="toggleVisibility('Message-Container'); makeMaze();" value="Play Again" />
+    <header>
+        <h1>Maze Game</h1>
+        <p>By Xinhao Chen</p>
+    </header>
+    <div class="container">
+        <div id="page">
+            <div id="Message-Container">
+                <div id="message">
+                    <h1>Congratulations!</h1>
+                    <p>You are done.</p>
+                    <p id="moves"></p>
+                    <input id="okBtn" type="button" onclick="toggleVisibility('Message-Container'); makeMaze();" value="Play Again" />
+                </div>
+            </div>
+
+            <br>
+            <div id="menu">
+                <div class="custom-select">
+                    <select id="diffSelect">
+                        <option value="10">Easy</option>
+                        <option value="15">Medium</option>
+                        <option value="25">Hard</option>
+                        <option value="38">Extreme</option>
+                    </select>
+                </div>
+                <input id="startMazeBtn" type="button" onclick="makeMaze()" value="Start" />
+            </div>
+
+            <div id="view">
+                <div id="mazeContainer">
+                    <canvas id="mazeCanvas" class="border" height="1100" width="1100"></canvas>
+                </div>
+            </div>
+
+            <p id="instructions">Use arrow keys or touch buttons to move the key to the house!</p>
+            <div class="control-buttons">
+                <button onclick="movePlayer('up')">↑</button>
+            </div>
+            <div class="control-buttons">
+                <button onclick="movePlayer('left')">←</button>
+                <button onclick="movePlayer('down')">↓</button>
+                <button onclick="movePlayer('right')">→</button>
+            </div>
+            <br><br>
+            <a href="index.html"><button>Back to Profile</button></a>
         </div>
-      </div>
-
-      <br>
-      <div id="menu">
-        <div class="custom-select">
-          <select id="diffSelect">
-            <option value="10">Easy</option>
-            <option value="15">Medium</option>
-            <option value="25">Hard</option>
-            <option value="38">Extreme</option>
-          </select>
-        </div>
-        <input id="startMazeBtn" type="button" onclick="makeMaze()" value="Start" />
-      </div>
-
-      <div id="view">
-        <div id="mazeContainer">
-          <canvas id="mazeCanvas" class="border" height="1100" width="1100"></canvas>
-        </div>
-      </div>
-
-      <div class="control-buttons">
-        <img src="up-arrow.png" alt="Up" onclick="movePlayer('w')">
-        <img src="left-arrow.png" alt="Left" onclick="movePlayer('a')">
-        <img src="down-arrow.png" alt="Down" onclick="movePlayer('s')">
-        <img src="right-arrow.png" alt="Right" onclick="movePlayer('d')">
-      </div>
-
-      <p id="instructions">Use arrow keys or click the images to move the key to the house!</p>
-      <br><br>
-      <a href="index.html"><button>Back to Profile</button></a>
     </div>
-  </div>
 
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.touchswipe/1.6.18/jquery.touchSwipe.min.js"></script>
-  <script src="./script.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.touchswipe/1.6.18/jquery.touchSwipe.min.js"></script>
+    <script src="./script.js"></script>
 </body>
 </html>
