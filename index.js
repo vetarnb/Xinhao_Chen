@@ -6,7 +6,7 @@ canvas.height = 576
 
 c.fillRect(0, 0, canvas.width, canvas.height)
 
-const gravity = 0.7
+const gravity = 1
 
 const background = new Sprite({
   position: {
@@ -81,8 +81,8 @@ const player = new Fighter({
       x: 100,
       y: 50
     },
-    width: 160,
-    height: 50
+    width: 100,
+    height: 30
   }
 })
 
@@ -142,8 +142,8 @@ const enemy = new Fighter({
       x: -170,
       y: 50
     },
-    width: 170,
-    height: 50
+    width: 100,
+    height: 30
   }
 })
 
@@ -186,10 +186,14 @@ function animate() {
 
   // player movement with boundary checks
   if (keys.a.pressed && player.lastKey === 'a' && player.position.x > 0) {
-    player.velocity.x = -5
+    player.velocity.x = -3
+    player.mirrored = true
+    player.attackBox.offset.x = -player.attackBox.width - 20 // Adjust attack box to left
     player.switchSprite('run')
   } else if (keys.d.pressed && player.lastKey === 'd' && player.position.x + player.width < canvas.width) {
-    player.velocity.x = 5
+    player.velocity.x = 3
+    player.mirrored = false
+    player.attackBox.offset.x = 20 // Adjust attack box to right
     player.switchSprite('run')
   } else {
     player.switchSprite('idle')
@@ -207,10 +211,14 @@ function animate() {
 
   // enemy movement with boundary checks
   if (keys.ArrowLeft.pressed && enemy.lastKey === 'ArrowLeft' && enemy.position.x > 0) {
-    enemy.velocity.x = -5
+    enemy.velocity.x = -3.3
+    enemy.mirrored = false // Enemy doesn't mirror when moving left
+    enemy.attackBox.offset.x = -enemy.attackBox.width - 20 // Adjust attack box to left
     enemy.switchSprite('run')
   } else if (keys.ArrowRight.pressed && enemy.lastKey === 'ArrowRight' && enemy.position.x + enemy.width < canvas.width) {
-    enemy.velocity.x = 5
+    enemy.velocity.x = 3.3
+    enemy.mirrored = true // Enemy mirrors when moving right
+    enemy.attackBox.offset.x = 20 // Adjust attack box to right
     enemy.switchSprite('run')
   } else {
     enemy.switchSprite('idle')
@@ -235,7 +243,7 @@ function animate() {
     player.isAttacking &&
     player.framesCurrent === 4
   ) {
-    enemy.takeHit()
+    enemy.takeHit(4) // Adjust damage as needed
     player.isAttacking = false
 
     gsap.to('#enemyHealth', {
@@ -257,7 +265,7 @@ function animate() {
     enemy.isAttacking &&
     enemy.framesCurrent === 2
   ) {
-    player.takeHit()
+    player.takeHit(8.5) // Adjust damage as needed
     enemy.isAttacking = false
 
     gsap.to('#playerHealth', {
@@ -284,10 +292,14 @@ window.addEventListener('keydown', (event) => {
       case 'd':
         keys.d.pressed = true
         player.lastKey = 'd'
+        player.mirrored = false
+        player.attackBox.offset.x = 20 // Adjust attack box to right
         break
       case 'a':
         keys.a.pressed = true
         player.lastKey = 'a'
+        player.mirrored = true
+        player.attackBox.offset.x = -player.attackBox.width - 20 // Adjust attack box to left
         break
       case 'w':
         if (player.position.y > 0) {
@@ -297,6 +309,11 @@ window.addEventListener('keydown', (event) => {
       case 's':
         player.attack()
         break
+      case 'r':
+        if (player.health < 100) {
+          player.receiveHealth(100)
+        }
+        break
     }
   }
 
@@ -305,17 +322,21 @@ window.addEventListener('keydown', (event) => {
       case 'ArrowRight':
         keys.ArrowRight.pressed = true
         enemy.lastKey = 'ArrowRight'
+        enemy.mirrored = true
+        enemy.attackBox.offset.x = 20 // Adjust attack box to right
         break
       case 'ArrowLeft':
         keys.ArrowLeft.pressed = true
         enemy.lastKey = 'ArrowLeft'
+        enemy.mirrored = false
+        enemy.attackBox.offset.x = -enemy.attackBox.width - 20 // Adjust attack box to left
         break
       case 'ArrowUp':
         if (enemy.position.y > 0) {
           enemy.velocity.y = -20
         }
         break
-      case 'ArrowDown':
+      case 'l':
         enemy.attack()
         break
     }
