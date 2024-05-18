@@ -20,7 +20,6 @@
         }
         .container {
             padding: 2rem;
-            text-align: center;
         }
         h1 {
             color: #4CAF50;
@@ -59,15 +58,22 @@
         button:hover {
             background-color: #45a049;
         }
-        .control-buttons {
+        .controls {
             display: flex;
             justify-content: center;
             margin-top: 1rem;
         }
-        .control-buttons button {
-            margin: 0.2rem;
-            padding: 1rem;
-            font-size: 1rem;
+        .control-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 0.5rem 1rem;
+            margin: 0.5rem;
+            cursor: pointer;
+        }
+        .control-btn:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
@@ -106,14 +112,12 @@
                 </div>
             </div>
 
-            <p id="instructions">Use arrow keys or touch buttons to move the key to the house!</p>
-            <div class="control-buttons">
-                <button onclick="movePlayer('up')">↑</button>
-            </div>
-            <div class="control-buttons">
-                <button onclick="movePlayer('left')">←</button>
-                <button onclick="movePlayer('down')">↓</button>
-                <button onclick="movePlayer('right')">→</button>
+            <p id="instructions">Use arrow keys or the buttons below to move the key to the house!</p>
+            <div class="controls">
+                <button class="control-btn" onclick="movePlayer('up')">↑</button>
+                <button class="control-btn" onclick="movePlayer('left')">←</button>
+                <button class="control-btn" onclick="movePlayer('down')">↓</button>
+                <button class="control-btn" onclick="movePlayer('right')">→</button>
             </div>
             <br><br>
             <a href="index.html"><button>Back to Profile</button></a>
