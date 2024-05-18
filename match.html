@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Match</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f4f4f4;
+    }
+    .container {
+      text-align: center;
+    }
+    #waitingMessage {
+      display: none;
+      font-size: 1.2rem;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Match</h1>
+    <div id="waitingMessage">Waiting for another player...</div>
+    <canvas></canvas>
+  </div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/classes.js"></script>
+  <script src="index_online.js"></script>
+  <script>
+    const roomNumber = localStorage.getItem('roomNumber');
+    const socket = new WebSocket('ws://localhost:8080');
+
+    socket.onopen = () => {
+      socket.send(JSON.stringify({ room: roomNumber }));
+    };
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      if (data.message === 'waiting') {
+        document.getElementById('waitingMessage').style.display = 'block';
+      } else if (data.start) {
+        document.getElementById('waitingMessage').style.display = 'none';
+        startGame(data.role);
+      }
+    };
+
+    function startGame(role) {
+      // Initialize game with the assigned role (player or enemy)
+      if (role === 'player') {
+        // Initialize player
+      } else {
+        // Initialize enemy
+      }
+    }
+  </script>
+</body>
+</html>
