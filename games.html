@@ -58,12 +58,16 @@
     button:hover {
       background-color: #45a049;
     }
-    #controls {
-      margin-top: 2rem;
-      text-align: center;
+    .control-buttons {
+      display: flex;
+      justify-content: center;
+      margin-top: 1rem;
     }
-    #controls button {
-      margin: 0.5rem;
+    .control-buttons img {
+      width: 50px;
+      height: 50px;
+      margin: 0 0.5rem;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -102,13 +106,15 @@
         </div>
       </div>
 
-      <p id="instructions">Use arrow keys or buttons to move the key to the house!</p>
-      <div id="controls">
-        <button onclick="moveUp()">↑</button><br>
-        <button onclick="moveLeft()">←</button>
-        <button onclick="moveDown()">↓</button>
-        <button onclick="moveRight()">→</button>
+      <p id="instructions">Use arrow keys or click the arrows below to move the key to the house!</p>
+
+      <div class="control-buttons">
+        <img src="up-arrow.png" onclick="movePlayer('w')" alt="Up">
+        <img src="left-arrow.png" onclick="movePlayer('a')" alt="Left">
+        <img src="down-arrow.png" onclick="movePlayer('s')" alt="Down">
+        <img src="right-arrow.png" onclick="movePlayer('d')" alt="Right">
       </div>
+
       <br><br>
       <a href="index.html"><button>Back to Profile</button></a>
     </div>
