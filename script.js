@@ -324,32 +324,28 @@ function Player(maze, c, _cellsize, onComplete, sprite = null) {
     var cell = map[cellCoords.x][cellCoords.y];
     moves++;
     switch (e.keyCode) {
-      case 65:
-      case 37: // west
+      case 65: // west (A)
         if (cell.w == true) {
           removeSprite(cellCoords);
           cellCoords = { x: cellCoords.x - 1, y: cellCoords.y };
           drawSprite(cellCoords);
         }
         break;
-      case 87:
-      case 38: // north
+      case 87: // north (W)
         if (cell.n == true) {
           removeSprite(cellCoords);
           cellCoords = { x: cellCoords.x, y: cellCoords.y - 1 };
           drawSprite(cellCoords);
         }
         break;
-      case 68:
-      case 39: // east
+      case 68: // east (D)
         if (cell.e == true) {
           removeSprite(cellCoords);
           cellCoords = { x: cellCoords.x + 1, y: cellCoords.y };
           drawSprite(cellCoords);
         }
         break;
-      case 83:
-      case 40: // south
+      case 83: // south (S)
         if (cell.s == true) {
           removeSprite(cellCoords);
           cellCoords = { x: cellCoords.x, y: cellCoords.y + 1 };
@@ -371,21 +367,24 @@ function Player(maze, c, _cellsize, onComplete, sprite = null) {
   this.bindKeyDown();
 }
 
-// Functions for button controls
-function moveUp() {
-  check({ keyCode: 38 });
-}
-
-function moveDown() {
-  check({ keyCode: 40 });
-}
-
-function moveLeft() {
-  check({ keyCode: 37 });
-}
-
-function moveRight() {
-  check({ keyCode: 39 });
+function movePlayer(direction) {
+  var e = { keyCode: 0 };
+  switch (direction) {
+    case 'w':
+      e.keyCode = 87; // W key
+      break;
+    case 'a':
+      e.keyCode = 65; // A key
+      break;
+    case 's':
+      e.keyCode = 83; // S key
+      break;
+    case 'd':
+      e.keyCode = 68; // D key
+      break;
+  }
+  var event = new KeyboardEvent('keydown', e);
+  document.dispatchEvent(event);
 }
 
 var mazeCanvas = document.getElementById("mazeCanvas");
