@@ -64,9 +64,7 @@
       margin-top: 1rem;
     }
     .control-buttons img {
-      width: 50px;
-      height: 50px;
-      margin: 0 0.5rem;
+      margin: 0 5px;
       cursor: pointer;
     }
   </style>
@@ -106,15 +104,14 @@
         </div>
       </div>
 
-      <p id="instructions">Use arrow keys or click the arrows below to move the key to the house!</p>
-
       <div class="control-buttons">
-        <img src="up-arrow.png" onclick="movePlayer('w')" alt="Up">
-        <img src="left-arrow.png" onclick="movePlayer('a')" alt="Left">
-        <img src="down-arrow.png" onclick="movePlayer('s')" alt="Down">
-        <img src="right-arrow.png" onclick="movePlayer('d')" alt="Right">
+        <img src="up-arrow.png" alt="Up" onclick="movePlayer('w')">
+        <img src="left-arrow.png" alt="Left" onclick="movePlayer('a')">
+        <img src="down-arrow.png" alt="Down" onclick="movePlayer('s')">
+        <img src="right-arrow.png" alt="Right" onclick="movePlayer('d')">
       </div>
 
+      <p id="instructions">Use arrow keys or click the images to move the key to the house!</p>
       <br><br>
       <a href="index.html"><button>Back to Profile</button></a>
     </div>
