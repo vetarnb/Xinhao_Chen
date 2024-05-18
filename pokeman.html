@@ -3,11 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- <link rel="stylesheet" href="css/style.css"> -->
     <title>Pokémon-style 2D Game</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        #gameContainer {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        canvas {
+            border: 1px solid black;
+        }
+        .button-container {
+            text-align: center;
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #fullscreenButton {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #fullscreenButton:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-    <canvas id="gameCanvas" width="640" height="480"></canvas>
+    <div class="button-container">
+        <button onclick="window.location.href='index.html'">Back to Profile</button>
+    </div>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="640" height="480"></canvas>
+        <button id="fullscreenButton" onclick="toggleFullscreen()">Fullscreen</button>
+    </div>
+    <div class="button-container">
+        <button onclick="restartGame()">Restart Game</button>
+    </div>
     <script src="js/npc.js"></script>
     <script src="js/menu.js"></script>
     <script src="js/selectmenu.js"></script>
@@ -18,9 +75,39 @@
     <script src="js/messageBox.js"></script>
     <script src="js/battle.js"></script>
     <script src="js/collision.js"></script>
-    <!-- <script src="js/game.js"></script> -->
     <script src="js/player.js"></script>
     <script src="js/map.js"></script>
     <script src="js/main.js"></script>
+    <script>
+        function restartGame() {
+            // Logic to restart the game
+            location.reload();
+        }
+
+        function toggleFullscreen() {
+            let elem = document.getElementById('gameContainer');
+            if (!document.fullscreenElement) {
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.mozRequestFullScreen) { // Firefox
+                    elem.mozRequestFullScreen();
+                } else if (elem.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) { // IE/Edge
+                    elem.msRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.mozCancelFullScreen) { // Firefox
+                    document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) { // Chrome, Safari and Opera
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) { // IE/Edge
+                    document.msExitFullscreen();
+                }
+            }
+        }
+    </script>
 </body>
 </html>
