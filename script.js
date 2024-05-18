@@ -55,13 +55,13 @@ function Maze(Width, Height) {
         w: { y: 0, x: -1, o: "e" }
     };
 
-    this.map = function () {
+    this.map = function() {
         return mazeMap;
     };
-    this.startCoord = function () {
+    this.startCoord = function() {
         return startCoord;
     };
-    this.endCoord = function () {
+    this.endCoord = function() {
         return endCoord;
     };
 
@@ -159,7 +159,7 @@ function DrawMaze(Maze, ctx, cellsize, endSprite = null) {
     var drawEndMethod;
     ctx.lineWidth = cellSize / 40;
 
-    this.redrawMaze = function (size) {
+    this.redrawMaze = function(size) {
         cellSize = size;
         ctx.lineWidth = cellSize / 50;
         drawMap();
@@ -267,7 +267,7 @@ function Player(maze, c, _cellsize, onComplete, sprite = null) {
     var cellSize = _cellsize;
     var halfCellSize = cellSize / 2;
 
-    this.redrawPlayer = function (_cellsize) {
+    this.redrawPlayer = function(_cellsize) {
         cellSize = _cellsize;
         drawSprite(cellCoords);
     };
@@ -359,32 +359,32 @@ function Player(maze, c, _cellsize, onComplete, sprite = null) {
         }
     }
 
-    function move(direction) {
+    this.move = function(direction) {
         var cell = map[cellCoords.x][cellCoords.y];
         moves++;
         switch (direction) {
-            case 'left':
+            case "left":
                 if (cell.w == true) {
                     removeSprite(cellCoords);
                     cellCoords = { x: cellCoords.x - 1, y: cellCoords.y };
                     drawSprite(cellCoords);
                 }
                 break;
-            case 'up':
+            case "up":
                 if (cell.n == true) {
                     removeSprite(cellCoords);
                     cellCoords = { x: cellCoords.x, y: cellCoords.y - 1 };
                     drawSprite(cellCoords);
                 }
                 break;
-            case 'right':
+            case "right":
                 if (cell.e == true) {
                     removeSprite(cellCoords);
                     cellCoords = { x: cellCoords.x + 1, y: cellCoords.y };
                     drawSprite(cellCoords);
                 }
                 break;
-            case 'down':
+            case "down":
                 if (cell.s == true) {
                     removeSprite(cellCoords);
                     cellCoords = { x: cellCoords.x, y: cellCoords.y + 1 };
@@ -392,13 +392,13 @@ function Player(maze, c, _cellsize, onComplete, sprite = null) {
                 }
                 break;
         }
-    }
+    };
 
-    this.bindKeyDown = function () {
+    this.bindKeyDown = function() {
         window.addEventListener("keydown", check, false);
     };
 
-    this.unbindKeyDown = function () {
+    this.unbindKeyDown = function() {
         window.removeEventListener("keydown", check, false);
     };
 
@@ -414,7 +414,7 @@ var maze, draw, player;
 var cellSize;
 var difficulty;
 
-window.onload = function () {
+window.onload = function() {
     let viewWidth = $("#view").width();
     let viewHeight = $("#view").height();
     if (viewHeight < viewWidth) {
@@ -425,12 +425,11 @@ window.onload = function () {
         ctx.canvas.height = viewWidth - viewWidth / 100;
     }
 
-    // Load and edit sprites
     var completeOne = false;
     var completeTwo = false;
     var isComplete = () => {
         if (completeOne === true && completeTwo === true) {
-            setTimeout(function () {
+            setTimeout(function() {
                 makeMaze();
             }, 500);
         }
@@ -438,7 +437,7 @@ window.onload = function () {
     sprite = new Image();
     sprite.src = "./key.png" + "?" + new Date().getTime();
     sprite.setAttribute("crossOrigin", " ");
-    sprite.onload = function () {
+    sprite.onload = function() {
         sprite = changeBrightness(1.2, sprite);
         completeOne = true;
         isComplete();
@@ -447,14 +446,14 @@ window.onload = function () {
     finishSprite = new Image();
     finishSprite.src = "./home.png" + "?" + new Date().getTime();
     finishSprite.setAttribute("crossOrigin", " ");
-    finishSprite.onload = function () {
+    finishSprite.onload = function() {
         finishSprite = changeBrightness(1.1, finishSprite);
         completeTwo = true;
         isComplete();
     };
 };
 
-window.onresize = function () {
+window.onresize = function() {
     let viewWidth = $("#view").width();
     let viewHeight = $("#view").height();
     if (viewHeight < viewWidth) {
