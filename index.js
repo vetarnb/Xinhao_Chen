@@ -147,8 +147,6 @@ const enemy = new Fighter({
   }
 })
 
-console.log(player)
-
 const keys = {
   a: {
     pressed: false
@@ -156,10 +154,16 @@ const keys = {
   d: {
     pressed: false
   },
+  w: {
+    pressed: false
+  },
   ArrowRight: {
     pressed: false
   },
   ArrowLeft: {
+    pressed: false
+  },
+  ArrowUp: {
     pressed: false
   }
 }
@@ -180,12 +184,11 @@ function animate() {
   player.velocity.x = 0
   enemy.velocity.x = 0
 
-  // player movement
-
-  if (keys.a.pressed && player.lastKey === 'a') {
+  // player movement with boundary checks
+  if (keys.a.pressed && player.lastKey === 'a' && player.position.x > 0) {
     player.velocity.x = -5
     player.switchSprite('run')
-  } else if (keys.d.pressed && player.lastKey === 'd') {
+  } else if (keys.d.pressed && player.lastKey === 'd' && player.position.x + player.width < canvas.width) {
     player.velocity.x = 5
     player.switchSprite('run')
   } else {
@@ -199,11 +202,11 @@ function animate() {
     player.switchSprite('fall')
   }
 
-  // Enemy movement
-  if (keys.ArrowLeft.pressed && enemy.lastKey === 'ArrowLeft') {
+  // enemy movement with boundary checks
+  if (keys.ArrowLeft.pressed && enemy.lastKey === 'ArrowLeft' && enemy.position.x > 0) {
     enemy.velocity.x = -5
     enemy.switchSprite('run')
-  } else if (keys.ArrowRight.pressed && enemy.lastKey === 'ArrowRight') {
+  } else if (keys.ArrowRight.pressed && enemy.lastKey === 'ArrowRight' && enemy.position.x + enemy.width < canvas.width) {
     enemy.velocity.x = 5
     enemy.switchSprite('run')
   } else {
