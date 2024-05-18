@@ -78,10 +78,10 @@ const player = new Fighter({
   },
   attackBox: {
     offset: {
-      x: 100,
+      x: 255,
       y: 50
     },
-    width: 100,
+    width: 175,
     height: 30
   }
 })
@@ -139,10 +139,10 @@ const enemy = new Fighter({
   },
   attackBox: {
     offset: {
-      x: -170,
+      x: -115,
       y: 50
     },
-    width: 100,
+    width: 115,
     height: 30
   }
 })
@@ -265,7 +265,7 @@ function animate() {
     enemy.isAttacking &&
     enemy.framesCurrent === 2
   ) {
-    player.takeHit(8.5) // Adjust damage as needed
+    player.takeHit(7.5) // Adjust damage as needed
     enemy.isAttacking = false
 
     gsap.to('#playerHealth', {
@@ -303,7 +303,7 @@ window.addEventListener('keydown', (event) => {
         break
       case 'w':
         if (player.position.y > 0) {
-          player.velocity.y = -20
+          player.velocity.y = -15
         }
         break
       case 's':
@@ -333,7 +333,7 @@ window.addEventListener('keydown', (event) => {
         break
       case 'ArrowUp':
         if (enemy.position.y > 0) {
-          enemy.velocity.y = -20
+          enemy.velocity.y = -15
         }
         break
       case 'l':
