@@ -178,26 +178,45 @@ const ws = new WebSocket(`wss://${location.host}`);
 let isPlayer = false;
 let room;
 
-// Listen for messages from the server
+// Listen for WebSocket events
+ws.onopen = () => {
+  console.log('WebSocket connection established');
+};
+
 ws.onmessage = (event) => {
   const data = JSON.parse(event.data);
+  console.log('Received message:', data); // Log received messages
+
   switch (data.type) {
     case 'init':
       isPlayer = data.isPlayer;
       room = data.room;
+      console.log('Player initialized:', isPlayer, 'Room:', room);
       break;
     case 'playerMove':
+      console.log('Player move:', data);
       updatePlayer(data);
       break;
     case 'playerAttack':
+      console.log('Player attack:', data);
       handlePlayerAttack(data);
       break;
     case 'gameState':
+      console.log('Game state:', data);
       syncGameState(data);
       break;
     default:
+      console.log('Unknown message type:', data.type);
       break;
   }
+};
+
+ws.onerror = (error) => {
+  console.error('WebSocket error:', error);
+};
+
+ws.onclose = () => {
+  console.log('WebSocket connection closed');
 };
 
 function updatePlayer(data) {
@@ -233,12 +252,14 @@ function syncGameState(data) {
 }
 
 function sendPlayerAction(action, details = {}) {
-  ws.send(JSON.stringify({
+  const message = JSON.stringify({
     type: action,
     room: room,
     id: player.id,
     ...details
-  }));
+  });
+  console.log('Sending message:', message); // Log sent messages
+  ws.send(message);
 }
 
 function animate() {
@@ -348,18 +369,21 @@ window.addEventListener('keydown', (event) => {
   if (!player.dead) {
     switch (event.key) {
       case 'd':
+        console.log('Key pressed: d');
         keys.d.pressed = true;
         player.lastKey = 'd';
         player.mirrored = false;
         player.attackBox.offset.x = 20; // Adjust attack box to right
         break;
       case 'a':
+        console.log('Key pressed: a');
         keys.a.pressed = true;
         player.lastKey = 'a';
         player.mirrored = true;
         player.attackBox.offset.x = -player.attackBox.width - 20; // Adjust attack box to left
         break;
       case 'w':
+        console.log('Key pressed: w');
         if (player.position.y > 0) {
           player.velocity.y = -15;
           sendPlayerAction('playerMove', {
@@ -370,10 +394,12 @@ window.addEventListener('keydown', (event) => {
         }
         break;
       case 's':
+        console.log('Key pressed: s');
         player.attack();
         sendPlayerAction('playerAttack');
         break;
       case 'r':
+        console.log('Key pressed: r');
         if (player.health < 100) {
           player.receiveHealth(100);
           sendPlayerAction('playerMove', {
@@ -390,10 +416,22 @@ window.addEventListener('keydown', (event) => {
 window.addEventListener('keyup', (event) => {
   switch (event.key) {
     case 'd':
+      console.log('Key released: d');
       keys.d.pressed = false;
+      sendPlayerAction('playerMove', {
+        position: player.position,
+        velocity: player.velocity,
+        sprite: 'idle'
+      });
       break;
     case 'a':
+      console.log('Key released: a');
       keys.a.pressed = false;
+      sendPlayerAction('playerMove', {
+        position: player.position,
+        velocity: player.velocity,
+        sprite: 'idle'
+      });
       break;
   }
 });
