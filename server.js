@@ -1,14 +1,16 @@
+const express = require('express');
+const http = require('http');
 const WebSocket = require('ws');
-const server = new WebSocket.Server({ port: process.env.PORT || 8080 });
+
+const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
 
 let rooms = {};
 
-server.on('connection', (ws) => {
-  console.log('New connection established');
-
+wss.on('connection', (ws) => {
   ws.on('message', (message) => {
     const data = JSON.parse(message);
-    console.log('Received message:', data);
 
     switch (data.type) {
       case 'joinRoom':
@@ -17,13 +19,11 @@ server.on('connection', (ws) => {
         }
 
         rooms[data.room].push(ws);
-        console.log(`User joined room ${data.room}`);
 
         if (rooms[data.room].length === 2) {
           rooms[data.room].forEach(client => {
             client.send(JSON.stringify({ type: 'startGame' }));
           });
-          delete rooms[data.room]; // Remove room info after starting the game
         }
         break;
 
@@ -40,7 +40,6 @@ server.on('connection', (ws) => {
         break;
 
       default:
-        console.log('Unknown message type:', data.type);
         break;
     }
   });
@@ -52,8 +51,11 @@ server.on('connection', (ws) => {
         delete rooms[room];
       }
     }
-    console.log('Connection closed');
   });
 });
 
-console.log('WebSocket server is running...');
+app.use(express.static('public'));
+
+server.listen(process.env.PORT || 8080, () => {
+  console.log('Server is running on port', server.address().port);
+});

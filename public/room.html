@@ -1,48 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Room</title>
-  <script>
-    let ws;
-    let roomNumber;
-
-    function joinRoom() {
-      roomNumber = document.getElementById('roomNumber').value;
-      if (!roomNumber) {
-        alert('Please enter a room number');
-        return;
-      }
-
-      ws = new WebSocket('ws://xinhaochen0727.herokuapp.com');
-      
-      ws.onopen = () => {
-        ws.send(JSON.stringify({ type: 'joinRoom', room: roomNumber }));
-      };
-
-      ws.onmessage = (event) => {
-        const message = JSON.parse(event.data);
-        if (message.type === 'startGame') {
-          alert('PVP Test');
-          ws.close();
-          window.location.href = 'snake.html';
-        }
-      };
-
-      ws.onclose = () => {
-        console.log('WebSocket connection closed');
-      };
-
-      ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
-      };
-    }
-  </script>
 </head>
 <body>
   <h1>Enter Room Number</h1>
-  <input type="text" id="roomNumber" placeholder="Room Number">
+  <input type="text" id="roomInput" placeholder="Enter Room Number">
   <button onclick="joinRoom()">Join Room</button>
+
+  <script>
+    const ws = new WebSocket('wss://xinhaochen0727-309bf2d7e201.herokuapp.com');
+
+    ws.onopen = () => {
+      console.log('Connected to WebSocket server');
+    };
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === 'startGame') {
+        alert('PVP Test');
+        window.location.href = 'snake.html';
+      }
+    };
+
+    function joinRoom() {
+      const room = document.getElementById('roomInput').value;
+      ws.send(JSON.stringify({ type: 'joinRoom', room }));
+    }
+  </script>
 </body>
 </html>
