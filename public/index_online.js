@@ -169,53 +169,69 @@ const keys = {
 }
 
 const ws = new WebSocket(`wss://${location.host}`);
+let isPlayer = false;
+let room;
 
-ws.onopen = () => {
-  console.log('Connected to WebSocket server');
-  const urlParams = new URLSearchParams(window.location.search);
-  const room = urlParams.get('room');
-  ws.send(JSON.stringify({ type: 'joinRoom', room }));
-};
-
+// Listen for messages from the server
 ws.onmessage = (event) => {
   const data = JSON.parse(event.data);
   switch (data.type) {
-    case 'startGame':
-      startGame();
+    case 'init':
+      isPlayer = data.isPlayer;
       break;
-    case 'playerAction':
-      handlePlayerAction(data);
+    case 'playerMove':
+      updatePlayer(data);
+      break;
+    case 'playerAttack':
+      handlePlayerAttack(data);
       break;
     case 'gameState':
-      updateGameState(data.state);
+      syncGameState(data);
       break;
     default:
-      console.log('Unknown message type:', data.type);
       break;
   }
-};
-
-function sendPlayerAction(action) {
-  ws.send(JSON.stringify({ type: 'playerAction', action }));
 }
 
-function handlePlayerAction(data) {
-  // Apply actions to the player or enemy based on the data received
-  const { playerState, enemyState } = data;
-  player.updateState(playerState);
-  enemy.updateState(enemyState);
+function updatePlayer(data) {
+  const playerToUpdate = data.id === player.id ? player : enemy;
+  playerToUpdate.position.x = data.position.x;
+  playerToUpdate.position.y = data.position.y;
+  playerToUpdate.velocity.x = data.velocity.x;
+  playerToUpdate.velocity.y = data.velocity.y;
+  playerToUpdate.switchSprite(data.sprite);
 }
 
-function updateGameState(state) {
-  // Update the game state based on the received state from the server
-  const { playerState, enemyState } = state;
-  player.updateState(playerState);
-  enemy.updateState(enemyState);
+function handlePlayerAttack(data) {
+  const playerToUpdate = data.id === player.id ? player : enemy;
+  playerToUpdate.attack();
 }
 
-function startGame() {
-  decreaseTimer();
-  animate();
+function syncGameState(data) {
+  player.position = data.player.position;
+  player.velocity = data.player.velocity;
+  player.health = data.player.health;
+
+  enemy.position = data.enemy.position;
+  enemy.velocity = data.enemy.velocity;
+  enemy.health = data.enemy.health;
+
+  gsap.to('#playerHealth', {
+    width: player.health + '%'
+  });
+
+  gsap.to('#enemyHealth', {
+    width: enemy.health + '%'
+  });
+}
+
+function sendPlayerAction(action, details = {}) {
+  ws.send(JSON.stringify({
+    type: action,
+    room: room,
+    id: player.id,
+    ...details
+  }));
 }
 
 function animate() {
@@ -229,114 +245,74 @@ function animate() {
   player.update()
   enemy.update()
 
-  player.velocity.x = 0
-  enemy.velocity.x = 0
+  if (isPlayer) {
+    player.velocity.x = 0
 
-  // player movement with boundary checks
-  if (keys.a.pressed && player.lastKey === 'a' && player.position.x > 0) {
-    player.velocity.x = -3
-    player.mirrored = true
-    player.attackBox.offset.x = -player.attackBox.width - 20 // Adjust attack box to left
-    player.switchSprite('run')
-    sendPlayerAction({ type: 'move', direction: 'left' });
-  } else if (keys.d.pressed && player.lastKey === 'd' && player.position.x + player.width < canvas.width) {
-    player.velocity.x = 3
-    player.mirrored = false
-    player.attackBox.offset.x = 20 // Adjust attack box to right
-    player.switchSprite('run')
-    sendPlayerAction({ type: 'move', direction: 'right' });
-  } else {
-    player.switchSprite('idle')
-  }
+    // player movement with boundary checks
+    if (keys.a.pressed && player.lastKey === 'a' && player.position.x > 0) {
+      player.velocity.x = -3
+      player.mirrored = true
+      player.attackBox.offset.x = -player.attackBox.width - 20 // Adjust attack box to left
+      player.switchSprite('run')
+    } else if (keys.d.pressed && player.lastKey === 'd' && player.position.x + player.width < canvas.width) {
+      player.velocity.x = 3
+      player.mirrored = false
+      player.attackBox.offset.x = 20 // Adjust attack box to right
+      player.switchSprite('run')
+    } else {
+      player.switchSprite('idle')
+    }
 
-  // jumping with boundary checks
-  if (player.velocity.y < 0 && player.position.y > 0) {
-    player.switchSprite('jump')
-  } else if (player.velocity.y > 0) {
-    player.switchSprite('fall')
-  } else if (player.position.y + player.height >= canvas.height) {
-    player.velocity.y = 0
-    player.position.y = canvas.height - player.height
-  }
+    // jumping with boundary checks
+    if (player.velocity.y < 0 && player.position.y > 0) {
+      player.switchSprite('jump')
+    } else if (player.velocity.y > 0) {
+      player.switchSprite('fall')
+    } else if (player.position.y + player.height >= canvas.height) {
+      player.velocity.y = 0
+      player.position.y = canvas.height - player.height
+    }
 
-  // enemy movement with boundary checks
-  if (keys.ArrowLeft.pressed && enemy.lastKey === 'ArrowLeft' && enemy.position.x > 0) {
-    enemy.velocity.x = -3.3
-    enemy.mirrored = false // Enemy doesn't mirror when moving left
-    enemy.attackBox.offset.x = -enemy.attackBox.width - 20 // Adjust attack box to left
-    enemy.switchSprite('run')
-    sendPlayerAction({ type: 'enemyMove', direction: 'left' });
-  } else if (keys.ArrowRight.pressed && enemy.lastKey === 'ArrowRight' && enemy.position.x + enemy.width < canvas.width) {
-    enemy.velocity.x = 3.3
-    enemy.mirrored = true // Enemy mirrors when moving right
-    enemy.attackBox.offset.x = 20 // Adjust attack box to right
-    enemy.switchSprite('run')
-    sendPlayerAction({ type: 'enemyMove', direction: 'right' });
-  } else {
-    enemy.switchSprite('idle')
-  }
+    // Send player state to server
+    sendPlayerAction('playerMove', {
+      position: player.position,
+      velocity: player.velocity,
+      sprite: player.currentSprite
+    });
 
-  // jumping with boundary checks
-  if (enemy.velocity.y < 0 && enemy.position.y > 0) {
-    enemy.switchSprite('jump')
-  } else if (enemy.velocity.y > 0) {
-    enemy.switchSprite('fall')
-  } else if (enemy.position.y + enemy.height >= canvas.height) {
-    enemy.velocity.y = 0
-    enemy.position.y = canvas.height - enemy.height
-  }
+    // detect for collision & enemy gets hit
+    if (
+      rectangularCollision({
+        rectangle1: player,
+        rectangle2: enemy
+      }) &&
+      player.isAttacking &&
+      player.framesCurrent === 4
+    ) {
+      enemy.takeHit(4) // Adjust damage as needed
+      player.isAttacking = false
 
-  // detect for collision & enemy gets hit
-  if (
-    rectangularCollision({
-      rectangle1: player,
-      rectangle2: enemy
-    }) &&
-    player.isAttacking &&
-    player.framesCurrent === 4
-  ) {
-    enemy.takeHit(4) // Adjust damage as needed
-    player.isAttacking = false
+      gsap.to('#enemyHealth', {
+        width: enemy.health + '%'
+      });
 
-    gsap.to('#enemyHealth', {
-      width: enemy.health + '%'
-    })
-    sendPlayerAction({ type: 'attack', damage: 4 });
-  }
+      // Send attack action to server
+      sendPlayerAction('playerAttack');
+    }
 
-  // if player misses
-  if (player.isAttacking && player.framesCurrent === 4) {
-    player.isAttacking = false
-  }
-
-  // this is where our player gets hit
-  if (
-    rectangularCollision({
-      rectangle1: enemy,
-      rectangle2: player
-    }) &&
-    enemy.isAttacking &&
-    enemy.framesCurrent === 2
-  ) {
-    player.takeHit(7.5) // Adjust damage as needed
-    enemy.isAttacking = false
-
-    gsap.to('#playerHealth', {
-      width: player.health + '%'
-    })
-    sendPlayerAction({ type: 'enemyAttack', damage: 7.5 });
-  }
-
-  // if player misses
-  if (enemy.isAttacking && enemy.framesCurrent === 2) {
-    enemy.isAttacking = false
+    // if player misses
+    if (player.isAttacking && player.framesCurrent === 4) {
+      player.isAttacking = false
+    }
   }
 
   // end game based on health
   if (enemy.health <= 0 || player.health <= 0) {
-    determineWinner({ player, enemy, timerId })
+    determineWinner({ player, enemy, timerId });
   }
 }
+
+animate()
 
 window.addEventListener('keydown', (event) => {
   if (!player.dead) {
@@ -360,12 +336,7 @@ window.addEventListener('keydown', (event) => {
         break
       case 's':
         player.attack()
-        sendPlayerAction({ type: 'attack' });
-        break
-      case 'r':
-        if (player.health < 100) {
-          player.receiveHealth(100)
-        }
+        sendPlayerAction('playerAttack');
         break
     }
   }
@@ -391,7 +362,7 @@ window.addEventListener('keydown', (event) => {
         break
       case 'l':
         enemy.attack()
-        sendPlayerAction({ type: 'enemyAttack' });
+        sendPlayerAction('playerAttack');
         break
     }
   }
@@ -417,3 +388,17 @@ window.addEventListener('keyup', (event) => {
       break
   }
 })
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
