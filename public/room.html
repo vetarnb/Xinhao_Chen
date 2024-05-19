@@ -20,7 +20,6 @@
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
       if (data.type === 'startGame') {
-        alert('PVP Test');
         window.location.href = `match.html?room=${document.getElementById('roomInput').value}`;
       } else if (data.type === 'error') {
         document.getElementById('errorMessage').innerText = data.message;
