@@ -4,7 +4,9 @@ const c = canvas.getContext('2d')
 canvas.width = 1024
 canvas.height = 576
 
-const gravity = 0.7
+c.fillRect(0, 0, canvas.width, canvas.height)
+
+const gravity = 1
 
 const background = new Sprite({
   position: {
@@ -76,11 +78,11 @@ const player = new Fighter({
   },
   attackBox: {
     offset: {
-      x: 100,
+      x: 255,
       y: 50
     },
-    width: 160,
-    height: 50
+    width: 175,
+    height: 30
   }
 })
 
@@ -137,11 +139,11 @@ const enemy = new Fighter({
   },
   attackBox: {
     offset: {
-      x: -170,
+      x: -115,
       y: 50
     },
-    width: 170,
-    height: 50
+    width: 115,
+    height: 30
   }
 })
 
@@ -152,19 +154,43 @@ const keys = {
   d: {
     pressed: false
   },
+  w: {
+    pressed: false
+  },
   ArrowRight: {
     pressed: false
   },
   ArrowLeft: {
     pressed: false
+  },
+  ArrowUp: {
+    pressed: false
+  }
+}
+
+let timer = 60
+let timerId
+
+function decreaseTimer() {
+  if (timer > 0) {
+    timerId = setTimeout(decreaseTimer, 1000)
+    timer--
+    document.querySelector('#timer').innerHTML = timer
+  }
+
+  if (timer === 0) {
+    determineWinner({ player, enemy, timerId })
   }
 }
 
 function rectangularCollision({ rectangle1, rectangle2 }) {
   return (
-    rectangle1.attackBox.position.x + rectangle1.attackBox.width >= rectangle2.position.x &&
-    rectangle1.attackBox.position.x <= rectangle2.position.x + rectangle2.width &&
-    rectangle1.attackBox.position.y + rectangle1.attackBox.height >= rectangle2.position.y &&
+    rectangle1.attackBox.position.x + rectangle1.attackBox.width >=
+      rectangle2.position.x &&
+    rectangle1.attackBox.position.x <=
+      rectangle2.position.x + rectangle2.width &&
+    rectangle1.attackBox.position.y + rectangle1.attackBox.height >=
+      rectangle2.position.y &&
     rectangle1.attackBox.position.y <= rectangle2.position.y + rectangle2.height
   )
 }
@@ -178,20 +204,6 @@ function determineWinner({ player, enemy, timerId }) {
     document.querySelector('#displayText').innerHTML = 'Player 1 Wins'
   } else if (player.health < enemy.health) {
     document.querySelector('#displayText').innerHTML = 'Player 2 Wins'
-  }
-}
-
-let timer = 60
-let timerId
-function decreaseTimer() {
-  if (timer > 0) {
-    timerId = setTimeout(decreaseTimer, 1000)
-    timer--
-    document.querySelector('#timer').innerHTML = timer
-  }
-
-  if (timer === 0) {
-    determineWinner({ player, enemy, timerId })
   }
 }
 
@@ -211,43 +223,57 @@ function animate() {
   player.velocity.x = 0
   enemy.velocity.x = 0
 
-  // Player movement
-  if (keys.a.pressed && player.lastKey === 'a') {
-    player.velocity.x = -5
+  // player movement with boundary checks
+  if (keys.a.pressed && player.lastKey === 'a' && player.position.x > 0) {
+    player.velocity.x = -3
+    player.mirrored = true
+    player.attackBox.offset.x = -player.attackBox.width - 20 // Adjust attack box to left
     player.switchSprite('run')
-  } else if (keys.d.pressed && player.lastKey === 'd') {
-    player.velocity.x = 5
+  } else if (keys.d.pressed && player.lastKey === 'd' && player.position.x + player.width < canvas.width) {
+    player.velocity.x = 3
+    player.mirrored = false
+    player.attackBox.offset.x = 20 // Adjust attack box to right
     player.switchSprite('run')
   } else {
     player.switchSprite('idle')
   }
 
-  // Jumping
-  if (player.velocity.y < 0) {
+  // jumping with boundary checks
+  if (player.velocity.y < 0 && player.position.y > 0) {
     player.switchSprite('jump')
   } else if (player.velocity.y > 0) {
     player.switchSprite('fall')
+  } else if (player.position.y + player.height >= canvas.height) {
+    player.velocity.y = 0
+    player.position.y = canvas.height - player.height
   }
 
-  // Enemy movement
-  if (keys.ArrowLeft.pressed && enemy.lastKey === 'ArrowLeft') {
-    enemy.velocity.x = -5
+  // enemy movement with boundary checks
+  if (keys.ArrowLeft.pressed && enemy.lastKey === 'ArrowLeft' && enemy.position.x > 0) {
+    enemy.velocity.x = -3.3
+    enemy.mirrored = false // Enemy doesn't mirror when moving left
+    enemy.attackBox.offset.x = -enemy.attackBox.width - 20 // Adjust attack box to left
     enemy.switchSprite('run')
-  } else if (keys.ArrowRight.pressed && enemy.lastKey === 'ArrowRight') {
-    enemy.velocity.x = 5
+  } else if (keys.ArrowRight.pressed && enemy.lastKey === 'ArrowRight' && enemy.position.x + enemy.width < canvas.width) {
+    enemy.velocity.x = 3.3
+    enemy.mirrored = true // Enemy mirrors when moving right
+    enemy.attackBox.offset.x = 20 // Adjust attack box to right
     enemy.switchSprite('run')
   } else {
     enemy.switchSprite('idle')
   }
 
-  // Jumping
-  if (enemy.velocity.y < 0) {
+  // jumping with boundary checks
+  if (enemy.velocity.y < 0 && enemy.position.y > 0) {
     enemy.switchSprite('jump')
   } else if (enemy.velocity.y > 0) {
     enemy.switchSprite('fall')
+  } else if (enemy.position.y + enemy.height >= canvas.height) {
+    enemy.velocity.y = 0
+    enemy.position.y = canvas.height - enemy.height
   }
 
-  // Detect for collision & enemy gets hit
+  // detect for collision & enemy gets hit
   if (
     rectangularCollision({
       rectangle1: player,
@@ -256,7 +282,7 @@ function animate() {
     player.isAttacking &&
     player.framesCurrent === 4
   ) {
-    enemy.takeHit(20)
+    enemy.takeHit(4) // Adjust damage as needed
     player.isAttacking = false
 
     gsap.to('#enemyHealth', {
@@ -264,12 +290,12 @@ function animate() {
     })
   }
 
-  // If player misses
+  // if player misses
   if (player.isAttacking && player.framesCurrent === 4) {
     player.isAttacking = false
   }
 
-  // Detect for collision & player gets hit
+  // this is where our player gets hit
   if (
     rectangularCollision({
       rectangle1: enemy,
@@ -278,7 +304,7 @@ function animate() {
     enemy.isAttacking &&
     enemy.framesCurrent === 2
   ) {
-    player.takeHit(20)
+    player.takeHit(4) // Adjust damage as needed
     enemy.isAttacking = false
 
     gsap.to('#playerHealth', {
@@ -286,12 +312,12 @@ function animate() {
     })
   }
 
-  // If enemy misses
+  // if enemy misses
   if (enemy.isAttacking && enemy.framesCurrent === 2) {
     enemy.isAttacking = false
   }
 
-  // End game based on health
+  // end game based on health
   if (enemy.health <= 0 || player.health <= 0) {
     determineWinner({ player, enemy, timerId })
   }
@@ -311,7 +337,7 @@ window.addEventListener('keydown', (event) => {
         player.lastKey = 'a'
         break
       case 'w':
-        player.jump()
+        player.velocity.y = -20
         break
       case ' ':
         player.attack()
@@ -330,7 +356,7 @@ window.addEventListener('keydown', (event) => {
         enemy.lastKey = 'ArrowLeft'
         break
       case 'ArrowUp':
-        enemy.jump()
+        enemy.velocity.y = -20
         break
       case 'ArrowDown':
         enemy.attack()
