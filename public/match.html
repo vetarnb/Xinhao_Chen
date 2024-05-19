@@ -26,6 +26,12 @@
       font-size: 16px;
       cursor: pointer;
     }
+    #waitingMessage {
+      display: none;
+      margin-top: 20px;
+      font-size: 18px;
+      color: red;
+    }
   </style>
 </head>
 <body>
@@ -33,6 +39,7 @@
   <div class="button-container">
     <button onclick="goBack()">Back to Room</button>
   </div>
+  <div id="waitingMessage">Waiting for another player...</div>
 
   <script>
     const canvas = document.getElementById('gameCanvas');
@@ -43,29 +50,218 @@
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     // WebSocket setup
-    const ws = new WebSocket('ws://<your-heroku-app>.herokuapp.com');
+    const ws = new WebSocket('wss://xinhaochen0727-309bf2d7e201.herokuapp.com');
 
     ws.onopen = () => {
       const roomNumber = prompt('Enter room number:');
-      ws.send(JSON.stringify({ room: roomNumber }));
+      ws.send(JSON.stringify({ type: 'joinRoom', room: roomNumber }));
     };
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
 
-      if (data.start) {
-        console.log(`Game started as ${data.role}`);
-        // Initialize game logic here based on role (player or enemy)
-      } else if (data.message === 'waiting') {
-        console.log(`Waiting for another player to join room ${data.room}`);
-      } else {
-        // Handle game state updates here
-        console.log(`Received game state update: ${event.data}`);
+      if (data.message === 'waiting') {
+        document.getElementById('waitingMessage').style.display = 'block';
+      } else if (data.start) {
+        document.getElementById('waitingMessage').style.display = 'none';
+        startGame(data.role);
+      } else if (data.type === 'update') {
+        updateGame(data);
       }
     };
 
     function goBack() {
       window.location.href = 'room.html';
+    }
+
+    let player, enemy;
+
+    function startGame(role) {
+      if (role === 'player') {
+        player = new Fighter({
+          position: { x: 0, y: 0 },
+          velocity: { x: 0, y: 0 },
+          offset: { x: 0, y: 0 },
+          imageSrc: './img/samuraiMack/Idle.png',
+          framesMax: 8,
+          scale: 2.5,
+          offset: { x: 215, y: 157 },
+          sprites: {
+            idle: { imageSrc: './img/samuraiMack/Idle.png', framesMax: 8 },
+            run: { imageSrc: './img/samuraiMack/Run.png', framesMax: 8 },
+            jump: { imageSrc: './img/samuraiMack/Jump.png', framesMax: 2 },
+            fall: { imageSrc: './img/samuraiMack/Fall.png', framesMax: 2 },
+            attack1: { imageSrc: './img/samuraiMack/Attack1.png', framesMax: 6 },
+            takeHit: { imageSrc: './img/samuraiMack/Take Hit - white silhouette.png', framesMax: 4 },
+            death: { imageSrc: './img/samuraiMack/Death.png', framesMax: 6 }
+          },
+          attackBox: {
+            offset: { x: 255, y: 50 },
+            width: 175,
+            height: 30
+          }
+        });
+
+        enemy = new Fighter({
+          position: { x: 400, y: 100 },
+          velocity: { x: 0, y: 0 },
+          color: 'blue',
+          offset: { x: -50, y: 0 },
+          imageSrc: './img/kenji/Idle.png',
+          framesMax: 4,
+          scale: 2.5,
+          offset: { x: 215, y: 167 },
+          sprites: {
+            idle: { imageSrc: './img/kenji/Idle.png', framesMax: 4 },
+            run: { imageSrc: './img/kenji/Run.png', framesMax: 8 },
+            jump: { imageSrc: './img/kenji/Jump.png', framesMax: 2 },
+            fall: { imageSrc: './img/kenji/Fall.png', framesMax: 2 },
+            attack1: { imageSrc: './img/kenji/Attack1.png', framesMax: 4 },
+            takeHit: { imageSrc: './img/kenji/Take hit.png', framesMax: 3 },
+            death: { imageSrc: './img/kenji/Death.png', framesMax: 7 }
+          },
+          attackBox: {
+            offset: { x: -115, y: 50 },
+            width: 115,
+            height: 30
+          }
+        });
+      } else {
+        enemy = new Fighter({
+          position: { x: 0, y: 0 },
+          velocity: { x: 0, y: 0 },
+          offset: { x: 0, y: 0 },
+          imageSrc: './img/samuraiMack/Idle.png',
+          framesMax: 8,
+          scale: 2.5,
+          offset: { x: 215, y: 157 },
+          sprites: {
+            idle: { imageSrc: './img/samuraiMack/Idle.png', framesMax: 8 },
+            run: { imageSrc: './img/samuraiMack/Run.png', framesMax: 8 },
+            jump: { imageSrc: './img/samuraiMack/Jump.png', framesMax: 2 },
+            fall: { imageSrc: './img/samuraiMack/Fall.png', framesMax: 2 },
+            attack1: { imageSrc: './img/samuraiMack/Attack1.png', framesMax: 6 },
+            takeHit: { imageSrc: './img/samuraiMack/Take Hit - white silhouette.png', framesMax: 4 },
+            death: { imageSrc: './img/samuraiMack/Death.png', framesMax: 6 }
+          },
+          attackBox: {
+            offset: { x: 255, y: 50 },
+            width: 175,
+            height: 30
+          }
+        });
+
+        player = new Fighter({
+          position: { x: 400, y: 100 },
+          velocity: { x: 0, y: 0 },
+          color: 'blue',
+          offset: { x: -50, y: 0 },
+          imageSrc: './img/kenji/Idle.png',
+          framesMax: 4,
+          scale: 2.5,
+          offset: { x: 215, y: 167 },
+          sprites: {
+            idle: { imageSrc: './img/kenji/Idle.png', framesMax: 4 },
+            run: { imageSrc: './img/kenji/Run.png', framesMax: 8 },
+            jump: { imageSrc: './img/kenji/Jump.png', framesMax: 2 },
+            fall: { imageSrc: './img/kenji/Fall.png', framesMax: 2 },
+            attack1: { imageSrc: './img/kenji/Attack1.png', framesMax: 4 },
+            takeHit: { imageSrc: './img/kenji/Take hit.png', framesMax: 3 },
+            death: { imageSrc: './img/kenji/Death.png', framesMax: 7 }
+          },
+          attackBox: {
+            offset: { x: -115, y: 50 },
+            width: 115,
+            height: 30
+          }
+        });
+      }
+
+      animate();
+    }
+
+    function updateGame(data) {
+      if (data.role === 'player') {
+        player.position = data.position;
+        player.velocity = data.velocity;
+        player.health = data.health;
+        player.attackBox = data.attackBox;
+        player.framesCurrent = data.framesCurrent;
+        player.isAttacking = data.isAttacking;
+      } else if (data.role === 'enemy') {
+        enemy.position = data.position;
+        enemy.velocity = data.velocity;
+        enemy.health = data.health;
+        enemy.attackBox = data.attackBox;
+        enemy.framesCurrent = data.framesCurrent;
+        enemy.isAttacking = data.isAttacking;
+      }
+    }
+
+    function animate() {
+      window.requestAnimationFrame(animate);
+      ctx.fillStyle = 'black';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      player.update();
+      enemy.update();
+
+      // Player movement with boundary checks
+      if (keys.a.pressed && player.lastKey === 'a' && player.position.x > 0) {
+        player.velocity.x = -3;
+        player.mirrored = true;
+        player.attackBox.offset.x = -player.attackBox.width;
+      } else if (keys.d.pressed && player.lastKey === 'd' && player.position.x + player.width < canvas.width) {
+        player.velocity.x = 3;
+        player.mirrored = false;
+        player.attackBox.offset.x = player.width;
+      } else {
+        player.velocity.x = 0;
+      }
+
+      if (player.position.y + player.height + player.velocity.y >= canvas.height) {
+        player.velocity.y = 0;
+        player.position.y = canvas.height - player.height;
+      } else {
+        player.velocity.y += gravity;
+      }
+
+      // Enemy movement
+      if (keys.ArrowLeft.pressed && enemy.lastKey === 'ArrowLeft' && enemy.position.x > 0) {
+        enemy.velocity.x = -3;
+        enemy.mirrored = true;
+        enemy.attackBox.offset.x = -enemy.attackBox.width;
+      } else if (keys.ArrowRight.pressed && enemy.lastKey === 'ArrowRight' && enemy.position.x + enemy.width < canvas.width) {
+        enemy.velocity.x = 3;
+        enemy.mirrored = false;
+        enemy.attackBox.offset.x = enemy.width;
+      } else {
+        enemy.velocity.x = 0;
+      }
+
+      if (enemy.position.y + enemy.height + enemy.velocity.y >= canvas.height) {
+        enemy.velocity.y = 0;
+        enemy.position.y = canvas.height - enemy.height;
+      } else {
+        enemy.velocity.y += gravity;
+      }
+
+      // Collision detection
+      if (player.isAttacking && rectCollision(player, enemy)) {
+        enemy.takeHit();
+        player.isAttacking = false;
+        gsap.to('#enemyHealth', {
+          width: enemy.health + '%'
+        });
+      }
+
+      if (enemy.isAttacking && rectCollision(enemy, player)) {
+        player.takeHit();
+        enemy.isAttacking = false;
+        gsap.to('#playerHealth', {
+          width: player.health + '%'
+        });
+      }
     }
   </script>
 </body>
