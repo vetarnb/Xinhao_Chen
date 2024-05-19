@@ -178,37 +178,9 @@ const ws = new WebSocket(`wss://${location.host}`);
 let isPlayer = false;
 let room;
 
-// Listen for WebSocket events
+// WebSocket event handling
 ws.onopen = () => {
   console.log('WebSocket connection established');
-};
-
-ws.onmessage = (event) => {
-  const data = JSON.parse(event.data);
-  console.log('Received message:', data); // Log received messages
-
-  switch (data.type) {
-    case 'init':
-      isPlayer = data.isPlayer;
-      room = data.room;
-      console.log('Player initialized:', isPlayer, 'Room:', room);
-      break;
-    case 'playerMove':
-      console.log('Player move:', data);
-      updatePlayer(data);
-      break;
-    case 'playerAttack':
-      console.log('Player attack:', data);
-      handlePlayerAttack(data);
-      break;
-    case 'gameState':
-      console.log('Game state:', data);
-      syncGameState(data);
-      break;
-    default:
-      console.log('Unknown message type:', data.type);
-      break;
-  }
 };
 
 ws.onerror = (error) => {
@@ -219,6 +191,28 @@ ws.onclose = () => {
   console.log('WebSocket connection closed');
 };
 
+// Listen for messages from the server
+ws.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  switch (data.type) {
+    case 'init':
+      isPlayer = data.isPlayer;
+      room = data.room;
+      break;
+    case 'playerMove':
+      updatePlayer(data);
+      break;
+    case 'playerAttack':
+      handlePlayerAttack(data);
+      break;
+    case 'gameState':
+      syncGameState(data);
+      break;
+    default:
+      break;
+  }
+};
+
 function updatePlayer(data) {
   const playerToUpdate = data.id === player.id ? player : enemy;
   playerToUpdate.position.x = data.position.x;
@@ -226,6 +220,7 @@ function updatePlayer(data) {
   playerToUpdate.velocity.x = data.velocity.x;
   playerToUpdate.velocity.y = data.velocity.y;
   playerToUpdate.switchSprite(data.sprite);
+  console.log('Updated player:', playerToUpdate);
 }
 
 function handlePlayerAttack(data) {
@@ -252,14 +247,12 @@ function syncGameState(data) {
 }
 
 function sendPlayerAction(action, details = {}) {
-  const message = JSON.stringify({
+  ws.send(JSON.stringify({
     type: action,
     room: room,
     id: player.id,
     ...details
-  });
-  console.log('Sending message:', message); // Log sent messages
-  ws.send(message);
+  }));
 }
 
 function animate() {

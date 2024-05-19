@@ -64,7 +64,7 @@ function handleJoinRoom(ws, roomName) {
 
     if (rooms[roomName].length === 2) {
       rooms[roomName].forEach(client => {
-        client.send(JSON.stringify({ type: 'startGame' }));
+        client.send(JSON.stringify({ type: 'startGame', room: roomName }));
       });
     }
   } else {
@@ -76,7 +76,7 @@ function handlePlayerAction(ws, data) {
   const room = rooms[data.room];
   if (room) {
     room.forEach(client => {
-      if (client !== ws && client.readyState === WebSocket.OPEN) {
+      if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify(data));
       }
     });
