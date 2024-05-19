@@ -157,7 +157,8 @@
         </div>
     </div>
     <div style="margin-top: 1rem;">
-        <button onclick="window.location.href='room.html'">Back to Room</button>
+        <button onclick="restartGame()">Restart Game</button>
+        <button onclick="window.location.href='Snake.html'">Single</button>
     </div>
     <script
         src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"
@@ -167,6 +168,11 @@
     ></script>
     <script src="js/utils.js"></script>
     <script src="js/classes.js"></script>
-    <script src="index_online.js"></script> <!-- Use the online script -->
+    <script src="index_online.js"></script> <!-- Default to single player -->
+    <script>
+        function restartGame() {
+            window.location.reload();
+        }
+    </script>
 </body>
 </html>
