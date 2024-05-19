@@ -1,72 +1,63 @@
 const express = require('express');
-const path = require('path');
+const http = require('http');
 const WebSocket = require('ws');
+const path = require('path');
 
 const app = express();
-const port = process.env.PORT || 6866;
-
-// Serve static files from the "public" directory
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Serve the main HTML file for the root URL
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-const server = app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
-
-// Set up WebSocket server
+const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-const rooms = {};
+const PORT = process.env.PORT || 8080;
+
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
+});
+
+let rooms = {};
 
 wss.on('connection', (ws) => {
-  console.log('A player has connected');
-
   ws.on('message', (message) => {
     const data = JSON.parse(message);
-    const roomNumber = data.room;
 
-    if (!rooms[roomNumber]) {
-      rooms[roomNumber] = { players: [], state: {} };
-    }
+    if (data.room) {
+      if (!rooms[data.room]) {
+        rooms[data.room] = { players: [] };
+      }
 
-    const room = rooms[roomNumber];
+      rooms[data.room].players.push(ws);
 
-    if (room.players.length < 2) {
-      room.players.push(ws);
-      ws.send(JSON.stringify({ message: 'waiting', room: roomNumber }));
-
-      if (room.players.length === 2) {
-        room.players.forEach((player, index) => {
-          player.send(JSON.stringify({ start: true, role: index === 0 ? 'player' : 'enemy' }));
+      if (rooms[data.room].players.length === 2) {
+        rooms[data.room].players.forEach((client, index) => {
+          client.send(JSON.stringify({ start: true, role: index === 0 ? 'player' : 'enemy' }));
+        });
+      } else {
+        ws.send(JSON.stringify({ message: 'waiting' }));
+      }
+    } else {
+      const room = rooms[data.roomNumber];
+      if (room) {
+        room.players.forEach((client) => {
+          if (client !== ws) {
+            client.send(message);
+          }
         });
       }
     }
+  });
 
-    ws.on('close', () => {
-      const index = room.players.indexOf(ws);
-      if (index !== -1) {
-        room.players.splice(index, 1);
-        if (room.players.length === 0) {
-          delete rooms[roomNumber];
-        }
+  ws.on('close', () => {
+    for (const room in rooms) {
+      rooms[room].players = rooms[room].players.filter((client) => client !== ws);
+
+      if (rooms[room].players.length === 0) {
+        delete rooms[room];
       }
-    });
-
-    ws.on('message', (message) => {
-      const state = JSON.parse(message);
-      room.state = state;
-
-      room.players.forEach((player) => {
-        if (player !== ws) {
-          player.send(message);
-        }
-      });
-    });
+    }
   });
 });
 
-console.log('WebSocket server is running');
+server.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});

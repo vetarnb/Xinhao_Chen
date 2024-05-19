@@ -6,59 +6,66 @@
   <title>Match</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      background-color: #f4f4f4;
+      background-color: #f0f0f0;
+      margin: 0;
+      font-family: Arial, sans-serif;
     }
-    .container {
-      text-align: center;
+    canvas {
+      border: 1px solid #000;
     }
-    #waitingMessage {
-      display: none;
-      font-size: 1.2rem;
-      margin-top: 1rem;
+    .button-container {
+      margin-top: 20px;
+    }
+    .button-container button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Match</h1>
-    <div id="waitingMessage">Waiting for another player...</div>
-    <canvas></canvas>
+  <canvas id="gameCanvas" width="800" height="600"></canvas>
+  <div class="button-container">
+    <button onclick="goBack()">Back to Room</button>
   </div>
 
-  <script src="js/utils.js"></script>
-  <script src="js/classes.js"></script>
-  <script src="index_online.js"></script>
   <script>
-    const roomNumber = localStorage.getItem('roomNumber');
-    const socket = new WebSocket('ws://localhost:8080');
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    // Basic canvas setup
+    ctx.fillStyle = 'lightgrey';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // WebSocket setup
+    const ws = new WebSocket('ws://<your-heroku-app>.herokuapp.com');
 
-    socket.onopen = () => {
-      socket.send(JSON.stringify({ room: roomNumber }));
+    ws.onopen = () => {
+      const roomNumber = prompt('Enter room number:');
+      ws.send(JSON.stringify({ room: roomNumber }));
     };
 
-    socket.onmessage = (event) => {
+    ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
 
-      if (data.message === 'waiting') {
-        document.getElementById('waitingMessage').style.display = 'block';
-      } else if (data.start) {
-        document.getElementById('waitingMessage').style.display = 'none';
-        startGame(data.role);
+      if (data.start) {
+        console.log(`Game started as ${data.role}`);
+        // Initialize game logic here based on role (player or enemy)
+      } else if (data.message === 'waiting') {
+        console.log(`Waiting for another player to join room ${data.room}`);
+      } else {
+        // Handle game state updates here
+        console.log(`Received game state update: ${event.data}`);
       }
     };
 
-    function startGame(role) {
-      // Initialize game with the assigned role (player or enemy)
-      if (role === 'player') {
-        // Initialize player
-      } else {
-        // Initialize enemy
-      }
+    function goBack() {
+      window.location.href = 'room.html';
     }
   </script>
 </body>
