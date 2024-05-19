@@ -1,8 +1,16 @@
-const WebSocket = require('ws');
 const express = require('express');
+const path = require('path');
+const WebSocket = require('ws');
 
-const app = express();
 const PORT = process.env.PORT || 8080;
+const app = express();
+
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
@@ -56,4 +64,4 @@ wss.on('connection', (ws) => {
   });
 });
 
-console.log(`WebSocket server is running on ws://localhost:${PORT}`);
+console.log('WebSocket server is running');
