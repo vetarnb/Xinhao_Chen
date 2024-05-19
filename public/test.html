@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket Test</title>
+</head>
+<body>
+    <h1>WebSocket Test</h1>
+    <button id="connectBtn">Connect to WebSocket</button>
+    <button id="sendBtn" disabled>Send Test Message</button>
+    <div id="output"></div>
+
+    <script>
+        let socket;
+
+        document.getElementById('connectBtn').addEventListener('click', () => {
+            socket = new WebSocket('ws://' + window.location.hostname + ':' + window.location.port);
+            
+            socket.addEventListener('open', () => {
+                document.getElementById('output').innerText += 'Connected to WebSocket server\n';
+                document.getElementById('sendBtn').disabled = false;
+            });
+
+            socket.addEventListener('message', (event) => {
+                const data = JSON.parse(event.data);
+                document.getElementById('output').innerText += 'Received from server: ' + data.message + '\n';
+            });
+
+            socket.addEventListener('close', () => {
+                document.getElementById('output').innerText += 'WebSocket connection closed\n';
+            });
+
+            socket.addEventListener('error', (error) => {
+                document.getElementById('output').innerText += 'WebSocket error: ' + error.message + '\n';
+            });
+        });
+
+        document.getElementById('sendBtn').addEventListener('click', () => {
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                socket.send(JSON.stringify({ type: 'test', message: 'Hello WebSocket server!' }));
+            }
+        });
+    </script>
+</body>
+</html>

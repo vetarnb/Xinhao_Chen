@@ -20,12 +20,12 @@ const shop = new Sprite({
   framesMax: 6
 });
 
-let player, enemy, role;
-const socket = new WebSocket('ws://localhost:8080');
+let player, enemy;
+const socket = new WebSocket('ws://localhost:6866');
 const roomNumber = localStorage.getItem('roomNumber');
 
 socket.onopen = () => {
-  socket.send(JSON.stringify({ room: roomNumber }));
+  socket.send(JSON.stringify({ type: 'joinRoom', room: roomNumber }));
 };
 
 socket.onmessage = (event) => {
@@ -36,7 +36,7 @@ socket.onmessage = (event) => {
   } else if (data.start) {
     document.getElementById('waitingMessage').style.display = 'none';
     startGame(data.role);
-  } else {
+  } else if (data.type === 'update') {
     updateGame(data);
   }
 };
@@ -204,13 +204,13 @@ function animate() {
 
   // Enemy movement with boundary checks
   if (keys.ArrowLeft.pressed && enemy.lastKey === 'ArrowLeft' && enemy.position.x > 0) {
-    enemy.velocity.x = -3.3;
-    enemy.mirrored = false; // Enemy doesn't mirror when moving left
+    enemy.velocity.x = -3;
+    enemy.mirrored = false;
     enemy.attackBox.offset.x = -enemy.attackBox.width - 20; // Adjust attack box to left
     enemy.switchSprite('run');
   } else if (keys.ArrowRight.pressed && enemy.lastKey === 'ArrowRight' && enemy.position.x + enemy.width < canvas.width) {
-    enemy.velocity.x = 3.3;
-    enemy.mirrored = true; // Enemy mirrors when moving right
+    enemy.velocity.x = 3;
+    enemy.mirrored = true;
     enemy.attackBox.offset.x = 20; // Adjust attack box to right
     enemy.switchSprite('run');
   } else {
