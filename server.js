@@ -4,8 +4,11 @@ const server = new WebSocket.Server({ port: process.env.PORT || 8080 });
 let rooms = {};
 
 server.on('connection', (ws) => {
+  console.log('New connection established');
+
   ws.on('message', (message) => {
     const data = JSON.parse(message);
+    console.log('Received message:', data);
 
     switch (data.type) {
       case 'joinRoom':
@@ -14,11 +17,13 @@ server.on('connection', (ws) => {
         }
 
         rooms[data.room].push(ws);
+        console.log(`User joined room ${data.room}`);
 
         if (rooms[data.room].length === 2) {
           rooms[data.room].forEach(client => {
             client.send(JSON.stringify({ type: 'startGame' }));
           });
+          delete rooms[data.room]; // Remove room info after starting the game
         }
         break;
 
@@ -35,6 +40,7 @@ server.on('connection', (ws) => {
         break;
 
       default:
+        console.log('Unknown message type:', data.type);
         break;
     }
   });
@@ -46,6 +52,7 @@ server.on('connection', (ws) => {
         delete rooms[room];
       }
     }
+    console.log('Connection closed');
   });
 });
 
