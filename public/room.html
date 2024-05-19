@@ -1,53 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Enter Room Number</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background-color: #f4f4f4;
-    }
-    .container {
-      text-align: center;
-    }
-    input {
-      padding: 0.5rem;
-      font-size: 1rem;
-    }
-    button {
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #45a049;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room - Xinhao Chen</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Enter Room Number</h1>
-    <input type="text" id="roomNumber" placeholder="Room Number">
-    <button onclick="joinRoom()">Join Room</button>
-  </div>
-
-  <script>
-    function joinRoom() {
-      const roomNumber = document.getElementById('roomNumber').value;
-      if (roomNumber) {
-        localStorage.setItem('roomNumber', roomNumber);
-        window.location.href = 'match.html';
-      }
-    }
-  </script>
+    <header>
+        <h1>Join Room</h1>
+        <p>By Xinhao Chen</p>
+    </header>
+    <div>
+        <input type="text" id="roomId" placeholder="Enter Room ID">
+        <button onclick="joinRoom()">Join Room</button>
+    </div>
+    <div id="waiting" style="display:none;">
+        <p>Waiting for another player to join...</p>
+    </div>
+    <script>
+        const socket = new WebSocket('wss://your-heroku-app.herokuapp.com');
+        
+        socket.addEventListener('open', () => {
+            console.log('Connected to WebSocket server');
+        });
+        
+        socket.addEventListener('message', (event) => {
+            const data = JSON.parse(event.data);
+            
+            if (data.type === 'startGame') {
+                window.location.href = 'match.html';
+            }
+        });
+        
+        function joinRoom() {
+            const roomId = document.getElementById('roomId').value;
+            socket.send(JSON.stringify({ type: 'joinRoom', room: roomId }));
+            document.getElementById('waiting').style.display = 'block';
+        }
+    </script>
 </body>
 </html>
