@@ -1,12 +1,12 @@
-const canvas = document.querySelector('canvas')
-const c = canvas.getContext('2d')
+const canvas = document.querySelector('canvas');
+const c = canvas.getContext('2d');
 
-canvas.width = 1024
-canvas.height = 576
+canvas.width = 1024;
+canvas.height = 576;
 
-c.fillRect(0, 0, canvas.width, canvas.height)
+c.fillRect(0, 0, canvas.width, canvas.height);
 
-const gravity = 1
+const gravity = 1;
 
 const background = new Sprite({
   position: {
@@ -14,7 +14,7 @@ const background = new Sprite({
     y: 0
   },
   imageSrc: './img/background.png'
-})
+});
 
 const shop = new Sprite({
   position: {
@@ -24,7 +24,7 @@ const shop = new Sprite({
   imageSrc: './img/shop.png',
   scale: 2.75,
   framesMax: 6
-})
+});
 
 const player = new Fighter({
   position: {
@@ -84,7 +84,7 @@ const player = new Fighter({
     width: 175,
     height: 30
   }
-})
+});
 
 const enemy = new Fighter({
   position: {
@@ -145,7 +145,7 @@ const enemy = new Fighter({
     width: 115,
     height: 30
   }
-})
+});
 
 const keys = {
   a: {
@@ -166,7 +166,7 @@ const keys = {
   ArrowUp: {
     pressed: false
   }
-}
+};
 
 const ws = new WebSocket(`wss://${location.host}`);
 let isPlayer = false;
@@ -178,6 +178,7 @@ ws.onmessage = (event) => {
   switch (data.type) {
     case 'init':
       isPlayer = data.isPlayer;
+      room = data.room;
       break;
     case 'playerMove':
       updatePlayer(data);
@@ -191,7 +192,7 @@ ws.onmessage = (event) => {
     default:
       break;
   }
-}
+};
 
 function updatePlayer(data) {
   const playerToUpdate = data.id === player.id ? player : enemy;
@@ -235,50 +236,73 @@ function sendPlayerAction(action, details = {}) {
 }
 
 function animate() {
-  window.requestAnimationFrame(animate)
-  c.fillStyle = 'black'
-  c.fillRect(0, 0, canvas.width, canvas.height)
-  background.update()
-  shop.update()
-  c.fillStyle = 'rgba(255, 255, 255, 0.15)'
-  c.fillRect(0, 0, canvas.width, canvas.height)
-  player.update()
-  enemy.update()
+  window.requestAnimationFrame(animate);
+  c.fillStyle = 'black';
+  c.fillRect(0, 0, canvas.width, canvas.height);
+  background.update();
+  shop.update();
+  c.fillStyle = 'rgba(255, 255, 255, 0.15)';
+  c.fillRect(0, 0, canvas.width, canvas.height);
+  player.update();
+  enemy.update();
 
   if (isPlayer) {
-    player.velocity.x = 0
+    player.velocity.x = 0;
 
     // player movement with boundary checks
     if (keys.a.pressed && player.lastKey === 'a' && player.position.x > 0) {
-      player.velocity.x = -3
-      player.mirrored = true
-      player.attackBox.offset.x = -player.attackBox.width - 20 // Adjust attack box to left
-      player.switchSprite('run')
+      player.velocity.x = -3;
+      player.mirrored = true;
+      player.attackBox.offset.x = -player.attackBox.width - 20; // Adjust attack box to left
+      player.switchSprite('run');
+      sendPlayerAction('playerMove', {
+        position: player.position,
+        velocity: player.velocity,
+        sprite: 'run'
+      });
     } else if (keys.d.pressed && player.lastKey === 'd' && player.position.x + player.width < canvas.width) {
-      player.velocity.x = 3
-      player.mirrored = false
-      player.attackBox.offset.x = 20 // Adjust attack box to right
-      player.switchSprite('run')
+      player.velocity.x = 3;
+      player.mirrored = false;
+      player.attackBox.offset.x = 20; // Adjust attack box to right
+      player.switchSprite('run');
+      sendPlayerAction('playerMove', {
+        position: player.position,
+        velocity: player.velocity,
+        sprite: 'run'
+      });
     } else {
-      player.switchSprite('idle')
+      player.switchSprite('idle');
+      sendPlayerAction('playerMove', {
+        position: player.position,
+        velocity: player.velocity,
+        sprite: 'idle'
+      });
     }
 
     // jumping with boundary checks
     if (player.velocity.y < 0 && player.position.y > 0) {
-      player.switchSprite('jump')
+      player.switchSprite('jump');
+      sendPlayerAction('playerMove', {
+        position: player.position,
+        velocity: player.velocity,
+        sprite: 'jump'
+      });
     } else if (player.velocity.y > 0) {
-      player.switchSprite('fall')
+      player.switchSprite('fall');
+      sendPlayerAction('playerMove', {
+        position: player.position,
+        velocity: player.velocity,
+        sprite: 'fall'
+      });
     } else if (player.position.y + player.height >= canvas.height) {
-      player.velocity.y = 0
-      player.position.y = canvas.height - player.height
+      player.velocity.y = 0;
+      player.position.y = canvas.height - player.height;
+      sendPlayerAction('playerMove', {
+        position: player.position,
+        velocity: player.velocity,
+        sprite: player.currentSprite
+      });
     }
-
-    // Send player state to server
-    sendPlayerAction('playerMove', {
-      position: player.position,
-      velocity: player.velocity,
-      sprite: player.currentSprite
-    });
 
     // detect for collision & enemy gets hit
     if (
@@ -289,8 +313,8 @@ function animate() {
       player.isAttacking &&
       player.framesCurrent === 4
     ) {
-      enemy.takeHit(4) // Adjust damage as needed
-      player.isAttacking = false
+      enemy.takeHit(4); // Adjust damage as needed
+      player.isAttacking = false;
 
       gsap.to('#enemyHealth', {
         width: enemy.health + '%'
@@ -302,7 +326,7 @@ function animate() {
 
     // if player misses
     if (player.isAttacking && player.framesCurrent === 4) {
-      player.isAttacking = false
+      player.isAttacking = false;
     }
   }
 
@@ -312,93 +336,58 @@ function animate() {
   }
 }
 
-animate()
+animate();
 
 window.addEventListener('keydown', (event) => {
   if (!player.dead) {
     switch (event.key) {
       case 'd':
-        keys.d.pressed = true
-        player.lastKey = 'd'
-        player.mirrored = false
-        player.attackBox.offset.x = 20 // Adjust attack box to right
-        break
+        keys.d.pressed = true;
+        player.lastKey = 'd';
+        player.mirrored = false;
+        player.attackBox.offset.x = 20; // Adjust attack box to right
+        break;
       case 'a':
-        keys.a.pressed = true
-        player.lastKey = 'a'
-        player.mirrored = true
-        player.attackBox.offset.x = -player.attackBox.width - 20 // Adjust attack box to left
-        break
+        keys.a.pressed = true;
+        player.lastKey = 'a';
+        player.mirrored = true;
+        player.attackBox.offset.x = -player.attackBox.width - 20; // Adjust attack box to left
+        break;
       case 'w':
         if (player.position.y > 0) {
-          player.velocity.y = -15
+          player.velocity.y = -15;
+          sendPlayerAction('playerMove', {
+            position: player.position,
+            velocity: player.velocity,
+            sprite: 'jump'
+          });
         }
-        break
+        break;
       case 's':
-        player.attack()
+        player.attack();
         sendPlayerAction('playerAttack');
-        break
-    }
-  }
-
-  if (!enemy.dead) {
-    switch (event.key) {
-      case 'ArrowRight':
-        keys.ArrowRight.pressed = true
-        enemy.lastKey = 'ArrowRight'
-        enemy.mirrored = true
-        enemy.attackBox.offset.x = 20 // Adjust attack box to right
-        break
-      case 'ArrowLeft':
-        keys.ArrowLeft.pressed = true
-        enemy.lastKey = 'ArrowLeft'
-        enemy.mirrored = false
-        enemy.attackBox.offset.x = -enemy.attackBox.width - 20 // Adjust attack box to left
-        break
-      case 'ArrowUp':
-        if (enemy.position.y > 0) {
-          enemy.velocity.y = -15
+        break;
+      case 'r':
+        if (player.health < 100) {
+          player.receiveHealth(100);
+          sendPlayerAction('playerMove', {
+            position: player.position,
+            velocity: player.velocity,
+            sprite: player.currentSprite
+          });
         }
-        break
-      case 'l':
-        enemy.attack()
-        sendPlayerAction('playerAttack');
-        break
+        break;
     }
   }
-})
+});
 
 window.addEventListener('keyup', (event) => {
   switch (event.key) {
     case 'd':
-      keys.d.pressed = false
-      break
+      keys.d.pressed = false;
+      break;
     case 'a':
-      keys.a.pressed = false
-      break
+      keys.a.pressed = false;
+      break;
   }
-
-  // enemy keys
-  switch (event.key) {
-    case 'ArrowRight':
-      keys.ArrowRight.pressed = false
-      break
-    case 'ArrowLeft':
-      keys.ArrowLeft.pressed = false
-      break
-  }
-})
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
+});
