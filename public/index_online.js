@@ -157,6 +157,9 @@ const keys = {
   w: {
     pressed: false
   },
+  s: {
+    pressed: false
+  },
   ArrowRight: {
     pressed: false
   },
@@ -164,6 +167,9 @@ const keys = {
     pressed: false
   },
   ArrowUp: {
+    pressed: false
+  },
+  l: {
     pressed: false
   }
 };
