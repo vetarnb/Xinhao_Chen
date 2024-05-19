@@ -6,41 +6,60 @@
   <title>Match</title>
   <style>
     body {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background-color: #f0f0f0;
       margin: 0;
-      font-family: Arial, sans-serif;
+      overflow: hidden;
     }
+
     canvas {
-      border: 1px solid #000;
+      display: block;
     }
-    .button-container {
-      margin-top: 20px;
-    }
-    .button-container button {
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    #waitingMessage {
+
+    #displayText {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-size: 48px;
       display: none;
-      margin-top: 20px;
-      font-size: 18px;
-      color: red;
+    }
+
+    #timer {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-size: 48px;
+    }
+
+    #playerHealth,
+    #enemyHealth {
+      position: absolute;
+      height: 25px;
+      background-color: green;
+    }
+
+    #playerHealth {
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
+
+    #enemyHealth {
+      top: 0;
+      right: 0;
+      width: 100%;
     }
   </style>
 </head>
 <body>
-  <canvas id="gameCanvas" width="800" height="600"></canvas>
-  <div class="button-container">
-    <button onclick="goBack()">Back to Room</button>
-  </div>
-  <div id="waitingMessage">Waiting for another player...</div>
-
+  <div id="displayText"></div>
+  <div id="timer">60</div>
+  <div id="playerHealth"></div>
+  <div id="enemyHealth"></div>
+  <canvas></canvas>
+  <script src="classes.js"></script>
   <script src="index_online.js"></script>
 </body>
 </html>
