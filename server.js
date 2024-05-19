@@ -8,8 +8,14 @@ const app = express();
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Serve index.html on the root path
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Serve snake.html for the game
+app.get('/snake', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'snake.html'));
 });
 
 const server = app.listen(PORT, () => {
