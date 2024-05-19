@@ -2,26 +2,22 @@ const express = require('express');
 const path = require('path');
 const WebSocket = require('ws');
 
-const PORT = process.env.PORT || 8080;
 const app = express();
+const port = process.env.PORT || 6866;
 
-// Serve static files from the 'public' directory
+// Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Serve index.html on the root path
+// Serve the main HTML file for the root URL
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Serve snake.html for the game
-app.get('/snake', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'snake.html'));
+const server = app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
 
-const server = app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
-
+// Set up WebSocket server
 const wss = new WebSocket.Server({ server });
 
 const rooms = {};
