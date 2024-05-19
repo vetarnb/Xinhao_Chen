@@ -21,7 +21,7 @@ const shop = new Sprite({
 });
 
 let player, enemy;
-const socket = new WebSocket('ws://localhost:6866');
+const socket = new WebSocket('wss://xinhaochen0727-309bf2d7e201.herokuapp.com');
 const roomNumber = localStorage.getItem('roomNumber');
 
 socket.onopen = () => {
@@ -150,14 +150,14 @@ function updateGame(data) {
     player.position = data.position;
     player.velocity = data.velocity;
     player.health = data.health;
-    player.attackBox.position = data.attackBox.position;
+    player.attackBox = data.attackBox;
     player.framesCurrent = data.framesCurrent;
     player.isAttacking = data.isAttacking;
-  } else {
+  } else if (data.role === 'enemy') {
     enemy.position = data.position;
     enemy.velocity = data.velocity;
     enemy.health = data.health;
-    enemy.attackBox.position = data.attackBox.position;
+    enemy.attackBox = data.attackBox;
     enemy.framesCurrent = data.framesCurrent;
     enemy.isAttacking = data.isAttacking;
   }
@@ -167,15 +167,12 @@ function animate() {
   window.requestAnimationFrame(animate);
   c.fillStyle = 'black';
   c.fillRect(0, 0, canvas.width, canvas.height);
+
   background.update();
   shop.update();
-  c.fillStyle = 'rgba(255, 255, 255, 0.15)';
-  c.fillRect(0, 0, canvas.width, canvas.height);
+
   player.update();
   enemy.update();
-
-  player.velocity.x = 0;
-  enemy.velocity.x = 0;
 
   // Player movement with boundary checks
   if (keys.a.pressed && player.lastKey === 'a' && player.position.x > 0) {
@@ -239,7 +236,7 @@ function animate() {
     gsap.to('#enemyHealth', { width: enemy.health + '%' });
 
     // Send state update to server
-    socket.send(JSON.stringify({ role: 'player', position: player.position, velocity: player.velocity, health: player.health, attackBox: player.attackBox, framesCurrent: player.framesCurrent, isAttacking: player.isAttacking }));
+    socket.send(JSON.stringify({ type: 'update', room: roomNumber, role: 'player', position: player.position, velocity: player.velocity, health: player.health, attackBox: player.attackBox, framesCurrent: player.framesCurrent, isAttacking: player.isAttacking }));
   }
 
   // If player misses
@@ -259,7 +256,7 @@ function animate() {
     gsap.to('#playerHealth', { width: player.health + '%' });
 
     // Send state update to server
-    socket.send(JSON.stringify({ role: 'enemy', position: enemy.position, velocity: enemy.velocity, health: enemy.health, attackBox: enemy.attackBox, framesCurrent: enemy.framesCurrent, isAttacking: enemy.isAttacking }));
+    socket.send(JSON.stringify({ type: 'update', room: roomNumber, role: 'enemy', position: enemy.position, velocity: enemy.velocity, health: enemy.health, attackBox: enemy.attackBox, framesCurrent: enemy.framesCurrent, isAttacking: enemy.isAttacking }));
   }
 
   // If enemy misses
@@ -316,7 +313,7 @@ window.addEventListener('keydown', (event) => {
     }
 
     // Send state update to server
-    socket.send(JSON.stringify({ role: 'player', position: player.position, velocity: player.velocity, health: player.health, attackBox: player.attackBox, framesCurrent: player.framesCurrent, isAttacking: player.isAttacking }));
+    socket.send(JSON.stringify({ type: 'update', room: roomNumber, role: 'player', position: player.position, velocity: player.velocity, health: player.health, attackBox: player.attackBox, framesCurrent: player.framesCurrent, isAttacking: player.isAttacking }));
   }
 
   if (!enemy.dead) {
@@ -344,7 +341,7 @@ window.addEventListener('keydown', (event) => {
     }
 
     // Send state update to server
-    socket.send(JSON.stringify({ role: 'enemy', position: enemy.position, velocity: enemy.velocity, health: enemy.health, attackBox: enemy.attackBox, framesCurrent: enemy.framesCurrent, isAttacking: enemy.isAttacking }));
+    socket.send(JSON.stringify({ type: 'update', room: roomNumber, role: 'enemy', position: enemy.position, velocity: enemy.velocity, health: enemy.health, attackBox: enemy.attackBox, framesCurrent: enemy.framesCurrent, isAttacking: enemy.isAttacking }));
   }
 });
 
