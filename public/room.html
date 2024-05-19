@@ -7,9 +7,10 @@
   <h1>Enter Room Number</h1>
   <input type="text" id="roomInput" placeholder="Enter Room Number">
   <button onclick="joinRoom()">Join Room</button>
+  <div id="errorMessage"></div>
 
   <script>
-    const ws = new WebSocket('wss://xinhaochen0727-309bf2d7e201.herokuapp.com');
+    const ws = new WebSocket(`wss://${location.host}`);
 
     ws.onopen = () => {
       console.log('Connected to WebSocket server');
@@ -20,6 +21,8 @@
       if (data.type === 'startGame') {
         alert('PVP Test');
         window.location.href = 'snake.html';
+      } else if (data.type === 'error') {
+        document.getElementById('errorMessage').innerText = data.message;
       }
     };
 
