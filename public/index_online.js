@@ -284,7 +284,7 @@
       enemy.isAttacking &&
       enemy.framesCurrent === 2
     ) {
-      player.takeHit(17); // Adjust damage as needed
+      player.takeHit(15.77); // Adjust damage as needed
       enemy.isAttacking = false;
 
       gsap.to('#playerHealth', {
